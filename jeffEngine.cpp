@@ -23,6 +23,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 jGraphics* jefGraf;
 int quit = 0;
 
+float refreshTimer = 0.0f;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -64,16 +66,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         jefGraf->jDraw();
         std::chrono::time_point<std::chrono::steady_clock> endTime = std::chrono::steady_clock::now();
 
-        int elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
-
-        double elapsedSeconds = elapsedTime / 1000000000.0;
-        int frameRate = floor(1.0f / elapsedSeconds);
-
-        char st[16];
-        sprintf_s(st, "%d\n", frameRate);
-        OutputDebugStringA(st);
-
+        int elapsedTime = (int)std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
+        float elapsedSeconds = elapsedTime / 1000000000.0f;
+        jefGraf->time += elapsedSeconds;
         jefGraf->delta = elapsedSeconds;
+
+        refreshTimer += elapsedSeconds;
+        if (refreshTimer >= 0.1f)
+        {
+            refreshTimer = 0.0f;
+            int frameRate = (int)(1.0f / elapsedSeconds);
+            jefGraf->frameRate = frameRate;
+        }
     }
 
     delete jefGraf;
@@ -165,6 +169,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         quit = 1;
         break;
     case WM_KEYDOWN:
+        if (wParam == VK_UP)
+        {
+            jefGraf->offset += jefGraf->delta * 10.0f;
+        }
+        if (wParam == VK_DOWN)
+        {
+            jefGraf->offset -= jefGraf->delta * 10.0f;
+        }
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

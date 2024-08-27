@@ -285,7 +285,10 @@ void jGraphics::setConstantBuffer(float cubenum)
 		DirectX::XMMATRIX transformMat;
 	} jVConstBufStruct;
 	jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveLH(1.0f, (float)(height * 1.0f / width), 0.1f, 100.0f));
-	jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(time * cubenum) * DirectX::XMMatrixRotationX(time * 0.5f * cubenum) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+	if (cubenum == 1)
+		jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(time * cubenum) * DirectX::XMMatrixRotationX(time * 0.5f * cubenum) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+	else
+		jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(time * cubenum) * DirectX::XMMatrixRotationX(time * 0.5f * cubenum) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 3.0f + offset));
 
 	struct
 	{

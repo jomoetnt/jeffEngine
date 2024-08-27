@@ -69,6 +69,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         int elapsedTime = (int)std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
         float elapsedSeconds = elapsedTime / 1000000000.0f;
         jefGraf->time += elapsedSeconds;
+        jefGraf->delta = elapsedSeconds;
 
         refreshTimer += elapsedSeconds;
         if (refreshTimer >= 0.1f)
@@ -168,6 +169,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         quit = 1;
         break;
     case WM_KEYDOWN:
+        if (wParam == VK_UP)
+        {
+            jefGraf->offset += jefGraf->delta * 10.0f;
+        }
+        if (wParam == VK_DOWN)
+        {
+            jefGraf->offset -= jefGraf->delta * 10.0f;
+        }
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

@@ -16,8 +16,11 @@ public:
 
 	void jDraw();
 
-	float time = 0.0;
+	float time = 0.0f;
+	float delta = 0.0f;
 	int frameRate = 0;
+
+	float offset = 0.0f;
 
 private:
 	HWND hwnd;

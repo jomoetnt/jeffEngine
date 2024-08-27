@@ -39,8 +39,8 @@ public:
 
 	ID3D11Device* jDev = nullptr;
 
-	ID3DBlob* jVShaderBlob;
-	ID3DBlob* jPShaderBlob;
-	ID3D11VertexShader* jVShader;
-	ID3D11PixelShader* jPShader;
+	ID3DBlob* jVShaderBlob = NULL;
+	ID3DBlob* jPShaderBlob = NULL;
+	ID3D11VertexShader* jVShader = NULL;
+	ID3D11PixelShader* jPShader = NULL;
 };

@@ -5,30 +5,33 @@
 #include <fstream>
 #include <iostream>
 
-class jeffMesh
+namespace jeffNamespace
 {
-public:
-	struct jeffVertex
+	class jeffMesh
 	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 colour;
-		DirectX::XMFLOAT2 texcoord;
-		DirectX::XMFLOAT3 normal;
+	public:
+		struct jeffVertex
+		{
+			DirectX::XMFLOAT3 position;
+			DirectX::XMFLOAT3 colour;
+			DirectX::XMFLOAT2 texcoord;
+			DirectX::XMFLOAT3 normal;
+		};
+
+		std::vector<jeffVertex> vertices;
+		std::vector<DirectX::XMFLOAT3> vpositions;
+		std::vector<DirectX::XMFLOAT2> vtexcoords;
+		std::vector<DirectX::XMFLOAT3> vnormals;
+		std::vector<int> indices;
+
+		std::string name;
+
+		bool smoothShading = false;
+
+		void loadFromObj(const char* filename);
+
+		void objProcessLine(std::string line, int& i);
+
+		void handleFace(std::string line, int& i);
 	};
-
-	std::vector<jeffVertex> vertices;
-    std::vector<DirectX::XMFLOAT3> vpositions;
-    std::vector<DirectX::XMFLOAT2> vtexcoords;
-    std::vector<DirectX::XMFLOAT3> vnormals;
-	std::vector<int> indices;
-
-    std::string name;
-
-    bool smoothShading = false;
-
-    void loadFromObj(const char* filename);
-
-    void objProcessLine(std::string line, int& i);
-
-	void handleFace(std::string line, int& i);
-};
+}

@@ -1,5 +1,7 @@
 #include "jeffMesh.h"
 
+using namespace jeffNamespace;
+
 void jeffMesh::loadFromObj(const char* filename)
 {
     std::ifstream file(filename);

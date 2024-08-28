@@ -154,10 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         quit = 1;
         break;
     case WM_KEYDOWN:
-        jMan->handleKeyEvent((char)wParam, false);
-        break;
-    case WM_CHAR:
-        jMan->handleKeyEvent((char)wParam, true);
+        jMan->handleKeyEvent((char)wParam);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

@@ -1,13 +1,17 @@
 #include "jeffModel.h"	
 
+using namespace jeffNamespace;
+
 void jeffModel::initObject()
 {
-	translate(0.0f, 0.0f, 2.0f);
+	transformPosition.z += 5.0f;
 }
 
 void jeffModel::tick(float delta)
 {
-	translate(0.0f, 0.0f, delta);
+	transformRotation.x += delta;
+	transformRotation.z += delta * 0.5f;
+	time += delta;
 }
 
 void jeffModel::prepDraw()
@@ -50,6 +54,9 @@ void jeffModel::setIBuf()
 
 void jeffModel::setConstantBuffer(float time)
 {
+	DirectX::XMVECTOR rot = DirectX::XMLoadFloat3(&transformRotation);
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&transformPosition);
+	transformMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot) * DirectX::XMMatrixTranslationFromVector(pos);
 	mat->initConstBuf(aspectRatio, time, transformMat);
 }
 

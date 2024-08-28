@@ -39,12 +39,33 @@
     <ClInclude Include="jeffHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,10 +4,10 @@
 #include "framework.h"
 #include "jeffEngine.h"
 
-#define MAX_LOADSTRING 100
+constexpr int MAX_LOADSTRING = 100;
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+constexpr int WINDOW_WIDTH = 1920;
+constexpr int WINDOW_HEIGHT = 1080;
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -20,10 +20,10 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-jGraphics* jefGraf;
-int quit = 0;
+using namespace jeffNamespace;
 
-float refreshTimer = 0.0f;
+jeffManager* jMan;
+int quit = 0;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_JEFFENGINE));
 
-    MSG msg = { };
+    MSG msg{};
 
     while (quit == 0)
     {
@@ -61,26 +61,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 DispatchMessage(&msg);
             }
         }
-
-        std::chrono::time_point<std::chrono::steady_clock> startTime = std::chrono::steady_clock::now();
-        jefGraf->jDraw();
-        std::chrono::time_point<std::chrono::steady_clock> endTime = std::chrono::steady_clock::now();
-
-        int elapsedTime = (int)std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
-        float elapsedSeconds = elapsedTime / 1000000000.0f;
-        jefGraf->time += elapsedSeconds;
-        jefGraf->delta = elapsedSeconds;
-
-        refreshTimer += elapsedSeconds;
-        if (refreshTimer >= 0.1f)
-        {
-            refreshTimer = 0.0f;
-            int frameRate = (int)(1.0f / elapsedSeconds);
-            jefGraf->frameRate = frameRate;
-        }
+        jMan->doFrame();
     }
 
-    delete jefGraf;
+    delete jMan;
+
     return (int) msg.wParam;
 }
 
@@ -93,7 +78,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+    WNDCLASSEXW wcex{};
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -137,7 +122,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-   jefGraf = new jGraphics(hWnd);
+   jMan = new jeffManager(hWnd);
 
    return TRUE;
 }
@@ -169,14 +154,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         quit = 1;
         break;
     case WM_KEYDOWN:
-        if (wParam == VK_UP)
-        {
-            jefGraf->offset += jefGraf->delta * 10.0f;
-        }
-        if (wParam == VK_DOWN)
-        {
-            jefGraf->offset -= jefGraf->delta * 10.0f;
-        }
+        jMan->handleKeyEvent((char)wParam, false);
+        break;
+    case WM_CHAR:
+        jMan->handleKeyEvent((char)wParam, true);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

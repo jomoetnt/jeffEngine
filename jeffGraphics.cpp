@@ -7,18 +7,14 @@ using namespace jeffNamespace;
 // Initialization
 //--------------------------------------------------------
 
-jGraphics::jGraphics(HWND handle)
+jGraphics::jGraphics(HWND handle, int width, int height)
 {
 	hwnd = handle;
 	initDevice();
-
-	testMat = new jeffMaterialShader(jDev, jContext, L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl");
 }
 
 jGraphics::~jGraphics()
 {
-	delete testMat;
-
 	// D2D and DirectWrite
 	jWriteFactory->Release();
 	jTextFormat->Release();
@@ -67,7 +63,7 @@ void jGraphics::makeSwapchain()
 	jSDesc.Windowed = true;
 	jSDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	jSDesc.Flags = 0;
-	D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, nullptr, 0, D3D11_SDK_VERSION, &jSDesc, &jSwap, &jDev, nullptr, &jContext);
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, nullptr, 0, D3D11_SDK_VERSION, &jSDesc, &jSwap, &jDev, nullptr, &jContext);
 }
 
 void jGraphics::makeRenderTarget()
@@ -159,57 +155,22 @@ void jGraphics::init2D()
 // Drawing
 //--------------------------------------------------------
 
-void jGraphics::jDraw()
+void jGraphics::draw3D(jeffModel* jModel)
 {
-	draw3D();
-	draw2D();
-
-	jSwap->Present(1, 0);
-}
-
-void jGraphics::draw3D()
-{
-	setRasterizer();
-	testModel->prepDraw();
-	setInputLayout();
-
-
 	const float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	jContext->ClearRenderTargetView(jRTarget, color); 
 	jContext->ClearDepthStencilView(jDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	jContext->DrawIndexed(36, 0, 0);
-}
-
-void jGraphics::setRasterizer()
-{
-	D3D11_VIEWPORT jViewport{};
-	jViewport.TopLeftX = 0.0f;
-	jViewport.TopLeftY = 0.0f;
-	jViewport.Width = (float)width;
-	jViewport.Height = (float)height;
-	jViewport.MinDepth = 0.0f;
-	jViewport.MaxDepth = 1.0f;
-	jContext->RSSetViewports(1, &jViewport);
-
-	D3D11_RECT jRect{};
-	jRect.left = 0;
-	jRect.right = width;
-	jRect.top = 0;
-	jRect.bottom = height;
-	jContext->RSSetScissorRects(1, &jRect);
-
-	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
-	jContext->RSSetState(jRast);
+	jModel->draw();
+	jLayout = jModel->jLayout;
+	jRast = jModel->jRast;
 }
 
 void jGraphics::draw2D()
 {
 	jRT->BeginDraw();
 
-	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(screenSize.left), static_cast<FLOAT>(screenSize.top),
-		static_cast<FLOAT>(80), static_cast<FLOAT>(50));
+	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(120), static_cast<FLOAT>(50));
 
 	std::wstring frameHz = std::to_wstring(frameRate);
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
@@ -217,16 +178,7 @@ void jGraphics::draw2D()
 	HRESULT hr = jRT->EndDraw();
 }
 
-void jGraphics::setInputLayout()
+void jGraphics::endFrame()
 {
-	D3D11_INPUT_ELEMENT_DESC jLayoutDescs[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	HRESULT hr = jDev->CreateInputLayout(jLayoutDescs, sizeof(jLayoutDescs) / sizeof(D3D11_INPUT_ELEMENT_DESC), testMat->jVShaderBlob->GetBufferPointer(), testMat->jVShaderBlob->GetBufferSize(), &jLayout);
-	jContext->IASetInputLayout(jLayout);
+	jSwap->Present(1, 0);
 }

@@ -13,20 +13,19 @@ jeffManager::jeffManager(HWND hWnd)
 	width = screenSize.right - screenSize.left;
 	height = screenSize.bottom - screenSize.top;
 
-	jefGraf = new jGraphics(hWnd);
-	jefGraf->screenSize = screenSize;
-	jefGraf->width = width; jefGraf->height = height;
+	jefGraf = new jGraphics(hWnd, width, height);
 
-	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->testMat, width, height);
+	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
 
 	jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);
-	jefGraf->testModel = jModel;
-	jefGraf->testModel->jLayout = jefGraf->jLayout;
 
 	std::vector<JEFF_DATATYPE> testParams; testParams.emplace_back(jeffNamespace::JEFF_BOOL);
 
-	jeffFuncStruct testFunction(moveCube, testParams, jModel);
+	jeffFuncStruct testFunction(moveCube, testParams);
 	functionLookup["moveCube"] = testFunction;
+
+	jefInput.callbackDictionary[jeffInput::W].emplace_back("moveCube(true)");
+	jefInput.callbackDictionary[jeffInput::S].emplace_back("moveCube(false)");
 
 	doFrame();
 }
@@ -34,7 +33,8 @@ jeffManager::jeffManager(HWND hWnd)
 int jeffManager::doFrame()
 {
 	std::chrono::time_point<std::chrono::steady_clock> startTime = std::chrono::steady_clock::now();
-	jefGraf->jDraw();
+	jefGraf->draw3D(jModel);
+	jefGraf->draw2D();
 	std::chrono::time_point<std::chrono::steady_clock> endTime = std::chrono::steady_clock::now();
 
 	int elapsedTime = (int)std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
@@ -53,6 +53,8 @@ int jeffManager::doFrame()
 
 	jModel->tick(delta);
 
+	jefGraf->endFrame();
+
 	return quit;
 }
 
@@ -60,15 +62,22 @@ void jeffNamespace::moveCube(std::vector<jeffType> jParams)
 {
 	bool paramBool = jParams.front().jBool;
 	float multiplier = paramBool ? 1.0f : -1.0f;
-	jModel->transformPosition.z += delta * 5.0f * multiplier;
+	jModel->transformPosition.z += delta * 50.0f * multiplier;
 }		
 
 void jeffManager::handleKeyEvent(char keycode)
 {
-	std::string funcSignature = jefInput.handleKeyEvent(keycode);
-	if (funcSignature.compare("unknown") == 0)
-		return;
+	std::vector<std::string> funcSignatures = jefInput.handleKeyEvent(keycode);
+	for (auto funcSignature : funcSignatures)
+	{
+		if (funcSignature.compare("unknown") == 0)
+			continue;
+		parseFuncSignature(funcSignature);
+	}
+}
 
+void jeffManager::parseFuncSignature(std::string funcSignature)
+{
 	std::string funcName = std::string();
 	for (size_t i = 0; i < funcSignature.size(); i++)
 	{
@@ -85,6 +94,11 @@ void jeffManager::handleKeyEvent(char keycode)
 
 	std::vector<std::string> args = jeffHelper::split(funcSignature, ", ");
 
+	parseArgs(funcName, args);
+}
+
+void jeffManager::parseArgs(std::string funcName, std::vector<std::string> args)
+{
 	std::vector<jeffType> parsedArgs;
 	int i = 0;
 	for (auto type : functionLookup[funcName].paramTypes)

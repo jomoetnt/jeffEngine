@@ -9,9 +9,6 @@ namespace jeffNamespace
 	class jeffMaterialShader
 	{
 	public:
-		ID3D11Buffer* jVConstBuf = nullptr;
-		ID3D11Buffer* jPConstBuf = nullptr;
-
 		struct
 		{
 			DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();
@@ -27,10 +24,13 @@ namespace jeffNamespace
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
 
+
 		ID3DBlob* jVShaderBlob = NULL;
 		ID3DBlob* jPShaderBlob = NULL;
 		ID3D11VertexShader* jVShader = NULL;
 		ID3D11PixelShader* jPShader = NULL;
+		ID3D11Buffer* jVConstBuf = nullptr;
+		ID3D11Buffer* jPConstBuf = nullptr;
 
 		jeffMaterialShader() {}
 		jeffMaterialShader(ID3D11Device* jDevice, ID3D11DeviceContext* jCont, LPCWSTR vFilename, LPCWSTR pFilename)
@@ -66,18 +66,12 @@ namespace jeffNamespace
 
 		void initConstBuf(float aspect, float time, DirectX::XMMATRIX transform)
 		{
-			/*jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveLH(aspect, 1.0f, 0.5f, 100.0f));
-			jVConstBufStruct.transformMat = transform;
-
-			jPConstBufStruct.dirLight = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
-			jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);*/
 			struct
 			{
 				DirectX::XMMATRIX projMat;
 				DirectX::XMMATRIX transformMat;
 			} jVConstBufStruct;
-			jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveLH(1.0f, 1.0f / aspect, 0.5f, 100.0f));
-			//jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationZ(time) * DirectX::XMMatrixRotationX(time * 0.5f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+			jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveLH(1.0f, aspect, 0.5f, 100.0f));
 			jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(transform);
 
 			struct

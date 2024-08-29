@@ -13,7 +13,7 @@ namespace jeffNamespace
 			// Arrow keys
 			UP, DOWN, LEFT, RIGHT,
 			// ???
-			ESCAPE, TAB, WINDOWS, DEL, BACKSPACE,
+			ESCAPE, TAB, WINDOWS, DEL, BACKSPACE, SPACEBAR,
 			// Modifiers
 			LCTRL, RCTRL, LALT, RALT, LSHIFT, RSHIFT, FN,
 			// Island
@@ -30,43 +30,44 @@ namespace jeffNamespace
 			UNKNOWN
 		};
 
-		std::string handleKeyEvent(char keycode)
+		std::map<JEFF_KEY, std::vector<std::string>> callbackDictionary;
+
+		jeffInput()
+		{
+			callbackDictionary[UNKNOWN].emplace_back("unknown");
+		}
+
+		std::vector<std::string> handleKeyEvent(char keycode)
 		{
 			jeffInput::JEFF_KEY translatedKey = UNKNOWN;
 
-			switch (keycode)
+   			switch (keycode)
 			{
-			case 'a': translatedKey = jeffInput::A; break; case 'b': translatedKey = jeffInput::B; break; case 'c': translatedKey = jeffInput::C; break;
-			case 'd': translatedKey = jeffInput::D; break; case 'e': translatedKey = jeffInput::E; break; case 'f': translatedKey = jeffInput::F; break;
-			case 'g': translatedKey = jeffInput::G; break; case 'h': translatedKey = jeffInput::H; break; case 'i': translatedKey = jeffInput::I; break;
-			case 'j': translatedKey = jeffInput::J; break; case 'k': translatedKey = jeffInput::K; break; case 'l': translatedKey = jeffInput::L; break;
-			case 'm': translatedKey = jeffInput::M; break; case 'n': translatedKey = jeffInput::N; break; case 'o': translatedKey = jeffInput::O; break;
-			case 'p': translatedKey = jeffInput::P; break; case 'q': translatedKey = jeffInput::Q; break; case 'r': translatedKey = jeffInput::R; break;
-			case 's': translatedKey = jeffInput::S; break; case 't': translatedKey = jeffInput::T; break; case 'u': translatedKey = jeffInput::U; break;
-			case 'v': translatedKey = jeffInput::V; break; case 'w': translatedKey = jeffInput::W; break; case 'x': translatedKey = jeffInput::X; break;
-			case 'y': translatedKey = jeffInput::Y; break; case 'z': translatedKey = jeffInput::Z; break; case 'A': translatedKey = jeffInput::A; break;
-			case 'B': translatedKey = jeffInput::B; break; case 'C': translatedKey = jeffInput::C; break; case 'D': translatedKey = jeffInput::D; break;
-			case 'E': translatedKey = jeffInput::E; break; case 'F': translatedKey = jeffInput::F; break; case 'G': translatedKey = jeffInput::G; break;
-			case 'H': translatedKey = jeffInput::H; break; case 'I': translatedKey = jeffInput::I; break; case 'J': translatedKey = jeffInput::J; break;
-			case 'K': translatedKey = jeffInput::K; break; case 'L': translatedKey = jeffInput::L; break; case 'M': translatedKey = jeffInput::M; break;
-			case 'N': translatedKey = jeffInput::N; break; case 'O': translatedKey = jeffInput::O; break; case 'P': translatedKey = jeffInput::P; break;
-			case 'Q': translatedKey = jeffInput::Q; break; case 'R': translatedKey = jeffInput::R; break; case 'S': translatedKey = jeffInput::S; break;
-			case 'T': translatedKey = jeffInput::T; break; case 'U': translatedKey = jeffInput::U; break; case 'V': translatedKey = jeffInput::V; break;
-			case 'W': translatedKey = jeffInput::W; break; case 'X': translatedKey = jeffInput::X; break; case 'Y': translatedKey = jeffInput::Y; break;
-			case 'Z': translatedKey = jeffInput::Z; break;
+			// Letters
+			case 'a': translatedKey = A; break; case 'b': translatedKey = B; break; case 'c': translatedKey = C; break;
+			case 'd': translatedKey = D; break; case 'e': translatedKey = E; break; case 'f': translatedKey = F; break;
+			case 'g': translatedKey = G; break; case 'h': translatedKey = H; break; case 'i': translatedKey = I; break;
+			case 'j': translatedKey = J; break; case 'k': translatedKey = K; break; case 'l': translatedKey = L; break;
+			case 'm': translatedKey = M; break; case 'n': translatedKey = N; break; case 'o': translatedKey = O; break;
+			case 'p': translatedKey = P; break; case 'q': translatedKey = Q; break; case 'r': translatedKey = R; break;
+			case 's': translatedKey = S; break; case 't': translatedKey = T; break; case 'u': translatedKey = U; break;
+			case 'v': translatedKey = V; break; case 'w': translatedKey = W; break; case 'x': translatedKey = X; break;
+			case 'y': translatedKey = Y; break; case 'z': translatedKey = Z; break; case 'A': translatedKey = A; break;
+			case 'B': translatedKey = B; break; case 'C': translatedKey = C; break; case 'D': translatedKey = D; break;
+			case 'E': translatedKey = E; break; case 'F': translatedKey = F; break; case 'G': translatedKey = G; break;
+			case 'H': translatedKey = H; break; case 'I': translatedKey = I; break; case 'J': translatedKey = J; break;
+			case 'K': translatedKey = K; break; case 'L': translatedKey = L; break; case 'M': translatedKey = M; break;
+			case 'N': translatedKey = N; break; case 'O': translatedKey = O; break; case 'P': translatedKey = P; break;
+			case 'Q': translatedKey = Q; break; case 'R': translatedKey = R; break; case 'S': translatedKey = S; break;
+			case 'T': translatedKey = T; break; case 'U': translatedKey = U; break; case 'V': translatedKey = V; break;
+			case 'W': translatedKey = W; break; case 'X': translatedKey = X; break; case 'Y': translatedKey = Y; break;
+			case 'Z': translatedKey = Z; break; 
+			// ???
+			case VK_SPACE: translatedKey = SPACEBAR; break; case VK_ESCAPE: translatedKey = ESCAPE; break;
+
 			}
 
-			return handleKey(translatedKey);
-		}
-
-		std::string handleKey(JEFF_KEY key)
-		{
-			switch (key)
-			{
-			case W: return std::string("moveCube(true)");
-			case S: return std::string("moveCube(false)");
-			}
-			return std::string("unknown");
+			return callbackDictionary[translatedKey];
 		}
 	};
 }

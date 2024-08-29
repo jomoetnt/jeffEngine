@@ -14,12 +14,12 @@ namespace jeffNamespace
 			ID3D11Device* jDev;
 			ID3D11DeviceContext* jContext;
 			ID3D11InputLayout* jLayout;
-			jeffMaterialShader* jMat;
+			ID3D11RasterizerState* jRast;
 			int width; int height;
 
-			graphicsStruct(ID3D11Device* jDevice, ID3D11DeviceContext* jCont, ID3D11InputLayout*& jILayout, jeffMaterialShader*& mat, int sWidth, int sHeight)
+			graphicsStruct(ID3D11Device* jDevice, ID3D11DeviceContext* jCont, ID3D11InputLayout* &jILayout, ID3D11RasterizerState* &jR, int sWidth, int sHeight)
 			{
-				jDev = jDevice; jContext = jCont; jLayout = jILayout; jMat = mat; width = sWidth; height = sHeight;
+				jDev = jDevice; jContext = jCont; jLayout = jILayout; width = sWidth; height = sHeight; jRast = jR;
 			}
 
 			graphicsStruct()
@@ -37,34 +37,27 @@ namespace jeffNamespace
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
 		ID3D11InputLayout* jLayout = nullptr;
+		ID3D11RasterizerState* jRast = nullptr;
 
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
 
-		float aspectRatio = 16.0f / 9.0f;
-		float time = 0.0f;
+		int width = 0; int height = 0;
 
-		void prepDraw();
+		void draw();
+		void setRasterizer();
 		void setShaders();
 		void setVBuf();
 		void setIBuf();
 		void setConstantBuffer(float time);
 
-		jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR pShaderFilename, graphicsStruct graf)
-		{
-			jDev = graf.jDev;
-			jContext = graf.jContext;
-			jLayout = graf.jLayout;
-			mat = graf.jMat;
-			aspectRatio = (float)(graf.width * 1.0f / graf.height);
+		void setInputLayout();
 
-			mesh.loadFromObj(meshFilename);
-
-			initObject();
-		}
+		jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR pShaderFilename, graphicsStruct graf);
 
 		~jeffModel()
 		{
+			delete mat;
 			jVertBuf->Release();
 			jIndexBuf->Release();
 		}

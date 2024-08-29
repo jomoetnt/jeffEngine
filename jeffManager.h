@@ -26,13 +26,12 @@ namespace jeffNamespace
 
 	struct jeffFuncStruct
 	{
-		jeffObject* jObj;
 		pJeffFunc funcPtr;
 		std::vector<JEFF_DATATYPE> paramTypes;
 
-		jeffFuncStruct(pJeffFunc initPtr = nullptr, std::vector<JEFF_DATATYPE> initTypes = std::vector<JEFF_DATATYPE>(), jeffObject* jeffObject = nullptr)
+		jeffFuncStruct(pJeffFunc initPtr = nullptr, std::vector<JEFF_DATATYPE> initTypes = std::vector<JEFF_DATATYPE>())
 		{
-			funcPtr = initPtr; paramTypes = initTypes; jObj = jeffObject;
+			funcPtr = initPtr; paramTypes = initTypes;
 		}
 	};
 
@@ -73,6 +72,9 @@ namespace jeffNamespace
 
 		RECT screenSize{};
 		int width = 0; int height = 0;
+
+		void parseFuncSignature(std::string funcSignature);
+		void parseArgs(std::string funcName, std::vector<std::string> args);
 
 	};
 }

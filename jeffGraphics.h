@@ -12,10 +12,8 @@ namespace jeffNamespace
 	class jGraphics
 	{
 	public:
-		jGraphics(HWND handle);
+		jGraphics(HWND handle, int width, int height);
 		~jGraphics();
-
-		void jDraw();
 
 		float time = 0.0f;
 		float delta = 0.0f;
@@ -25,11 +23,12 @@ namespace jeffNamespace
 		ID3D11Device* jDev;
 		ID3D11DeviceContext* jContext;
 		ID3D11InputLayout* jLayout;
+		ID3D11RasterizerState* jRast;
 
-		jeffModel* testModel = nullptr;
-		jeffMaterialShader* testMat = nullptr;
+		void draw3D(jeffModel* jModel);
+		void draw2D();
 
-		RECT screenSize;
+		void endFrame();
 
 	private:
 		HWND hwnd;
@@ -43,7 +42,6 @@ namespace jeffNamespace
 		ID3D11Texture2D* jDepthStencil = NULL;
 		ID3D11DepthStencilView* jDSV;
 		ID3D11DepthStencilState* jDepthState;
-		ID3D11RasterizerState* jRast;
 
 		// D2D and DirectWrite
 		ID2D1Factory* jD2DFactory;
@@ -59,11 +57,5 @@ namespace jeffNamespace
 		void makeSwapchain();
 		void makeRenderTarget();
 		void makeZBuf();
-
-		// Per object
-		void draw3D();
-		void draw2D();
-		void setRasterizer();
-		void setInputLayout();
 	};
 }

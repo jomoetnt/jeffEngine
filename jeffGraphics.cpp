@@ -171,7 +171,6 @@ void jGraphics::draw2D()
 	jRT->BeginDraw();
 
 	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(120), static_cast<FLOAT>(50));
-
 	std::wstring frameHz = std::to_wstring(frameRate);
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
 

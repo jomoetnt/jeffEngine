@@ -2,6 +2,7 @@
 
 #include "jeffGraphics.h"
 #include "jeffInput.h"
+#include "jeffAudio.h"
 #include <vector>
 #include <chrono>
 
@@ -53,18 +54,18 @@ namespace jeffNamespace
 			delete jModel;
 		}
 
-		//void makeEvent();
-		//void registerObject();
-
 		void handleKeyEvent(char keycode);
 
 		int doFrame();
 
+		void playSound(LPCWSTR filename);
+
 	private:
-		//std::vector<jeffObject*> jObjects;
+		std::vector<jeffObject*> jObjects;
 		std::map<std::string, jeffFuncStruct> functionLookup;
 
 		jGraphics* jefGraf = nullptr;
+		jeffAudio* jefSound = nullptr;
 		jeffInput jefInput;
 
 		float refreshTimer = 0.0f;

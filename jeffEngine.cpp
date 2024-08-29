@@ -22,6 +22,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 using namespace jeffNamespace;
 
+
 jeffManager* jMan;
 int quit = 0;
 

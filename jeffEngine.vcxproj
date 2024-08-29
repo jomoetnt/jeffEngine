@@ -145,6 +145,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="jeffAudio.h" />
+    <ClInclude Include="jeffEvent.h" />
     <ClInclude Include="jeffHelper.h" />
     <ClInclude Include="jeffInput.h" />
     <ClInclude Include="jeffManager.h" />
@@ -158,6 +160,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="jeffAudio.cpp" />
     <ClCompile Include="jeffEngine.cpp" />
     <ClCompile Include="jeffGraphics.cpp" />
     <ClCompile Include="jeffManager.cpp" />

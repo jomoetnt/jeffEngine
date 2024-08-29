@@ -51,6 +51,12 @@
     <ClInclude Include="jeffModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffAudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">
@@ -66,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

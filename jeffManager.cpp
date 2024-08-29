@@ -12,22 +12,22 @@ jeffManager::jeffManager(HWND hWnd)
 	GetClientRect(hWnd, &screenSize);
 	width = screenSize.right - screenSize.left;
 	height = screenSize.bottom - screenSize.top;
-
 	jefGraf = new jGraphics(hWnd, width, height);
 
-	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
+	jefSound = new jeffAudio();
+	jefSound->loadSound(L"testSound.wav");
+	jefSound->playSound(L"testSound.wav");
 
+	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
 	jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);
 
-	std::vector<JEFF_DATATYPE> testParams; testParams.emplace_back(jeffNamespace::JEFF_BOOL);
 
+	std::vector<JEFF_DATATYPE> testParams; testParams.emplace_back(jeffNamespace::JEFF_BOOL);
 	jeffFuncStruct testFunction(moveCube, testParams);
 	functionLookup["moveCube"] = testFunction;
 
 	jefInput.callbackDictionary[jeffInput::W].emplace_back("moveCube(true)");
 	jefInput.callbackDictionary[jeffInput::S].emplace_back("moveCube(false)");
-
-	doFrame();
 }
 
 int jeffManager::doFrame()
@@ -58,17 +58,22 @@ int jeffManager::doFrame()
 	return quit;
 }
 
+void jeffManager::playSound(LPCWSTR filename)
+{
+	jefSound->playSound(filename);
+}
+
 void jeffNamespace::moveCube(std::vector<jeffType> jParams)
 {
 	bool paramBool = jParams.front().jBool;
 	float multiplier = paramBool ? 1.0f : -1.0f;
 	jModel->transformPosition.z += delta * 50.0f * multiplier;
-}		
+}
 
 void jeffManager::handleKeyEvent(char keycode)
 {
 	std::vector<std::string> funcSignatures = jefInput.handleKeyEvent(keycode);
-	for (auto funcSignature : funcSignatures)
+	for (auto &funcSignature : funcSignatures)
 	{
 		if (funcSignature.compare("unknown") == 0)
 			continue;

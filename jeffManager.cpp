@@ -20,14 +20,19 @@ jeffManager::jeffManager(HWND hWnd)
 
 	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
 	jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);
+	jObjects.emplace_back(jModel);
+	
+
+	//std::vector<JEFF_DATATYPE> testParams; testParams.emplace_back(jeffNamespace::JEFF_BOOL);
+	//jeffFunc callbackTest = moveCube;
+	//jeffFuncStruct testFunction(moveCube, testParams);
+	//functionLookup["moveCube"] = testFunction;
+
+	//jefInput.callbackDictionary[jeffInput::W].emplace_back("moveCube(true)");
+	//jefInput.callbackDictionary[jeffInput::S].emplace_back("moveCube(false)");
 
 
-	std::vector<JEFF_DATATYPE> testParams; testParams.emplace_back(jeffNamespace::JEFF_BOOL);
-	jeffFuncStruct testFunction(moveCube, testParams);
-	functionLookup["moveCube"] = testFunction;
 
-	jefInput.callbackDictionary[jeffInput::W].emplace_back("moveCube(true)");
-	jefInput.callbackDictionary[jeffInput::S].emplace_back("moveCube(false)");
 }
 
 int jeffManager::doFrame()
@@ -63,84 +68,13 @@ void jeffManager::playSound(LPCWSTR filename)
 	jefSound->playSound(filename);
 }
 
-void jeffNamespace::moveCube(std::vector<jeffType> jParams)
-{
-	bool paramBool = jParams.front().jBool;
-	float multiplier = paramBool ? 1.0f : -1.0f;
-	jModel->transformPosition.z += delta * 50.0f * multiplier;
-}
-
 void jeffManager::handleKeyEvent(char keycode)
 {
-	std::vector<std::string> funcSignatures = jefInput.handleKeyEvent(keycode);
-	for (auto &funcSignature : funcSignatures)
+	JEFF_KEY eventKey = jefInput.handleKeyEvent(keycode);
+	if (eventKey == UNKNOWN) return;
+
+	for (auto &thing : jObjects)
 	{
-		if (funcSignature.compare("unknown") == 0)
-			continue;
-		parseFuncSignature(funcSignature);
+		thing->handleEvent(JEFF_KEY_EVENT, &eventKey);
 	}
-}
-
-void jeffManager::parseFuncSignature(std::string funcSignature)
-{
-	std::string funcName = std::string();
-	for (size_t i = 0; i < funcSignature.size(); i++)
-	{
-		char c = funcSignature.at(i);
-		if (c == '(')
-		{
-			funcSignature = funcSignature.substr(i + 1);
-			funcSignature = funcSignature.substr(0, funcSignature.size() - 1);
-			break;
-		}
-
-		funcName.push_back(c);
-	}
-
-	std::vector<std::string> args = jeffHelper::split(funcSignature, ", ");
-
-	parseArgs(funcName, args);
-}
-
-void jeffManager::parseArgs(std::string funcName, std::vector<std::string> args)
-{
-	std::vector<jeffType> parsedArgs;
-	int i = 0;
-	for (auto type : functionLookup[funcName].paramTypes)
-	{
-		switch (type)
-		{
-		case JEFF_FLOAT:
-		{
-			float parsedFloat = std::stof(args.data()[i]);
-			jeffType parsedFloatType{}; parsedFloatType.jFloat = parsedFloat;
-			parsedArgs.emplace_back(parsedFloatType);
-		}
-		break;
-		case JEFF_INT:
-		{
-			int parsedInt = std::stoi(args.data()[i]);
-			jeffType parsedIntType{}; parsedIntType.jInt = parsedInt;
-			parsedArgs.emplace_back(parsedIntType);
-		}
-		break;
-		case JEFF_CHAR:
-		{
-			char parsedChar = args.data()[i].front();
-			jeffType parsedCharType{}; parsedCharType.jChar = parsedChar;
-			parsedArgs.emplace_back(parsedCharType);
-		}
-		break;
-		case JEFF_BOOL:
-		{
-			bool parsedBool = args.data()[i].compare("true") == 0;
-			jeffType parsedBoolType{}; parsedBoolType.jBool = parsedBool;
-			parsedArgs.emplace_back(parsedBoolType);
-		}
-		break;
-		}
-		i++;
-	}
-
-	functionLookup[funcName].funcPtr(parsedArgs);
 }

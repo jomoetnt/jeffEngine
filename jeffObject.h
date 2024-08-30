@@ -1,10 +1,18 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <string>
 #include <DirectXMath.h>
+#include "jeffInput.h"
 
 namespace jeffNamespace
 {
+	enum JEFF_EVENT_TYPE
+	{
+		JEFF_KEY_EVENT, JEFF_MOUSE_EVENT
+	};
+
 	class jeffObject
 	{
 	public:
@@ -17,8 +25,20 @@ namespace jeffNamespace
 
 		float time = 0.0f;
 
-
 		virtual void initObject() = 0;
+
+		virtual void handleEvent(JEFF_EVENT_TYPE eventType, void* jParams)
+		{
+			switch (eventType)
+			{
+			case JEFF_KEY_EVENT: 
+				handleKeyEvent((JEFF_KEY*)jParams); 
+				break;
+			}
+		}
+
+		virtual void handleKeyEvent(JEFF_KEY* key) = 0;
+
 		virtual void tick(float delta)
 		{
 			time += delta;

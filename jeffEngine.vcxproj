@@ -146,7 +146,6 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="jeffAudio.h" />
-    <ClInclude Include="jeffEvent.h" />
     <ClInclude Include="jeffHelper.h" />
     <ClInclude Include="jeffInput.h" />
     <ClInclude Include="jeffManager.h" />

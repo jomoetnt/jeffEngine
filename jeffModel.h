@@ -53,11 +53,9 @@ namespace jeffNamespace
 		D3D11_RECT jRect{};
 		D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
 		D3D11_BUFFER_DESC vBufferDesc;
-		D3D11_SUBRESOURCE_DATA vInitData{};
 		D3D11_BUFFER_DESC iBufferDesc;
+		D3D11_SUBRESOURCE_DATA vInitData{};
 		D3D11_SUBRESOURCE_DATA iInitData{};
-
-
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
 
@@ -87,6 +85,8 @@ namespace jeffNamespace
 		}
 
 		void initObject() override;
+
+		void handleKeyEvent(JEFF_KEY* key);
 
 		void tick(float delta) override;
 

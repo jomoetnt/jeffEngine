@@ -70,7 +70,7 @@ void jeffModel::draw()
 	setConstantBuffer(time);
 	setShaders();
 	setInputLayout();
-	jContext->DrawIndexed(mesh.indices.size(), 0, 0);
+	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
 }
 
 void jeffModel::setRasterizer()
@@ -115,6 +115,16 @@ void jeffModel::setShaders()
 void jeffModel::initObject()
 {
 	transformPosition.z += 5.0f;
+
+	//funcLookup["JEFF_KEYEVENT"] = testFunction;
+}
+
+void jeffModel::handleKeyEvent(JEFF_KEY* key)
+{
+	if (*key == W)
+	{
+		transformPosition.z += 5.0f;
+	}
 }
 
 void jeffModel::tick(float delta)
@@ -122,8 +132,8 @@ void jeffModel::tick(float delta)
 	jeffObject::tick(delta);
 
 	transformRotation.x += delta;
-	transformRotation.z += delta * 0.5f;
+	transformRotation.z += delta * 0.5f;/*
 	transformScale.x = sinf(time) + 1;
 	transformScale.y = sinf(time + 1) + 1;
-	transformScale.z = sinf(time + 2) + 1;
+	transformScale.z = sinf(time + 2) + 1;*/
 }

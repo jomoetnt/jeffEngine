@@ -115,15 +115,15 @@ void jeffModel::setShaders()
 void jeffModel::initObject()
 {
 	transformPosition.z += 5.0f;
-
-	//funcLookup["JEFF_KEYEVENT"] = testFunction;
 }
 
 void jeffModel::handleKeyEvent(JEFF_KEY* key)
 {
+	if (mesh.name.compare("Cube") == 0)
+		return;
 	if (*key == W)
 	{
-		transformPosition.z += 5.0f;
+		transformPosition.z += 0.5f;
 	}
 }
 
@@ -132,8 +132,8 @@ void jeffModel::tick(float delta)
 	jeffObject::tick(delta);
 
 	transformRotation.x += delta;
-	transformRotation.z += delta * 0.5f;/*
-	transformScale.x = sinf(time) + 1;
-	transformScale.y = sinf(time + 1) + 1;
-	transformScale.z = sinf(time + 2) + 1;*/
+	transformRotation.z += delta * 0.5f;
+	//transformScale.x = sinf(time) + 1;
+	//transformScale.y = sinf(time + 1) + 1;
+	//transformScale.z = sinf(time + 2) + 1;
 }

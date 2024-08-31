@@ -10,8 +10,7 @@ namespace jeffNamespace
 {
 	class jeffManager;
 
-
-	extern jeffModel* jModel;
+	//extern jeffModel* jModel;
 
 	static float delta;
 
@@ -25,17 +24,21 @@ namespace jeffNamespace
 		~jeffManager()
 		{
 			delete jefGraf;
-			delete jModel;
+			for (auto& obj : jModels)
+			{
+				delete obj;
+			}
 		}
 
 		void handleKeyEvent(char keycode);
 
 		int doFrame();
+		void doPhysicsTick(float delta);
 
 		void playSound(LPCWSTR filename);
 
 	private:
-		std::vector<jeffObject*> jObjects;
+		std::vector<jeffModel*> jModels;
 
 		jGraphics* jefGraf = nullptr;
 		jeffAudio* jefSound = nullptr;

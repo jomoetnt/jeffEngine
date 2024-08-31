@@ -155,17 +155,6 @@ void jGraphics::init2D()
 // Drawing
 //--------------------------------------------------------
 
-void jGraphics::draw3D(jeffModel* jModel)
-{
-	const float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	jContext->ClearRenderTargetView(jRTarget, color); 
-	jContext->ClearDepthStencilView(jDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	jModel->draw();
-	jLayout = jModel->jLayout;
-	jRast = jModel->jRast;
-}
-
 void jGraphics::draw2D()
 {
 	jRT->BeginDraw();
@@ -175,6 +164,13 @@ void jGraphics::draw2D()
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
 
 	HRESULT hr = jRT->EndDraw();
+}
+
+void jGraphics::beginFrame()
+{
+	const float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	jContext->ClearRenderTargetView(jRTarget, color);
+	jContext->ClearDepthStencilView(jDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void jGraphics::endFrame()

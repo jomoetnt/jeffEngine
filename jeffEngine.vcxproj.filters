@@ -54,6 +54,9 @@
     <ClInclude Include="jeffAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffNetworking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

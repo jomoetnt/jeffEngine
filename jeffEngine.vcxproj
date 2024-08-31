@@ -153,6 +153,7 @@
     <ClInclude Include="jeffEngine.h" />
     <ClInclude Include="jeffGraphics.h" />
     <ClInclude Include="jeffMesh.h" />
+    <ClInclude Include="jeffNetworking.h" />
     <ClInclude Include="jeffObject.h" />
     <ClInclude Include="jeffModel.h" />
     <ClInclude Include="Resource.h" />

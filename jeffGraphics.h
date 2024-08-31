@@ -15,8 +15,6 @@ namespace jeffNamespace
 		jGraphics(HWND handle, int width, int height);
 		~jGraphics();
 
-		float time = 0.0f;
-		float delta = 0.0f;
 		int frameRate = 0;
 		int width = 0; int height = 0;
 
@@ -25,9 +23,9 @@ namespace jeffNamespace
 		ID3D11InputLayout* jLayout;
 		ID3D11RasterizerState* jRast;
 
-		void draw3D(jeffModel* jModel);
 		void draw2D();
 
+		void beginFrame();
 		void endFrame();
 
 	private:

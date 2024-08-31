@@ -44,7 +44,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
     // Set smooth shading
     if (firstChar == 's')
     {
-        name = line.erase(0, 2);
+        line = line.erase(0, 2);
         if (line.front() == '0')
             smoothShading = false;
         else if (line.front() == '1')

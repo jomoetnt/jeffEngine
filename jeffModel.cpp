@@ -7,6 +7,7 @@ jeffModel::jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR 
 	jDev = graf.jDev; jContext = graf.jContext; jLayout = graf.jLayout; jRast = graf.jRast; width = graf.width; height = graf.height;
 
 	mat = new jeffMaterialShader(jDev, jContext, vShaderFilename, pShaderFilename);
+	mat->setProjMat((float)(height * 1.0f / width));
 
 	mesh.loadFromObj(meshFilename);
 
@@ -59,7 +60,7 @@ void jeffModel::createIBuf()
 
 void jeffModel::createInputLayout()
 {
-	HRESULT hr = jDev->CreateInputLayout(jLayoutDescs, sizeof(jLayoutDescs) / sizeof(D3D11_INPUT_ELEMENT_DESC), mat->jVShaderBlob->GetBufferPointer(), mat->jVShaderBlob->GetBufferSize(), &jLayout);
+	HRESULT hr = jDev->CreateInputLayout(jLayoutDescs, 4, mat->jVShaderBlob->GetBufferPointer(), mat->jVShaderBlob->GetBufferSize(), &jLayout);
 }
 
 void jeffModel::draw()
@@ -98,7 +99,8 @@ void jeffModel::setConstantBuffer(float time)
 	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&transformPosition);
 	DirectX::XMVECTOR scale = DirectX::XMLoadFloat3(&transformScale);
 	transformMat = DirectX::XMMatrixScalingFromVector(scale) * DirectX::XMMatrixRotationRollPitchYawFromVector(rot) * DirectX::XMMatrixTranslationFromVector(pos);
-	mat->initConstBuf((float)(height * 1.0f / width), time, transformMat);
+
+	mat->initConstBuf(time, transformMat);
 }
 
 void jeffModel::setInputLayout()
@@ -123,7 +125,43 @@ void jeffModel::handleKeyEvent(JEFF_KEY* key)
 		return;
 	if (*key == W)
 	{
-		transformPosition.z += 0.5f;
+		mat->jPConstBufStruct.pointLight.y += 0.5f;
+	}
+	if (*key == A)
+	{
+		mat->jPConstBufStruct.pointLight.x -= 0.5f;
+	}
+	if (*key == S)
+	{
+		mat->jPConstBufStruct.pointLight.y -= 0.5f;
+	}
+	if (*key == D)
+	{
+		mat->jPConstBufStruct.pointLight.x += 0.5f;
+	}
+	if (*key == I)
+	{
+		mat->jPConstBufStruct.pointLightParams.x += 0.2f;
+	}
+	if (*key == J)
+	{
+		mat->jPConstBufStruct.pointLightParams.y -= 0.2f;
+	}
+	if (*key == K)
+	{
+		mat->jPConstBufStruct.pointLightParams.x -= 0.2f;
+	}
+	if (*key == L)
+	{
+		mat->jPConstBufStruct.pointLightParams.y += 0.2f;
+	}
+	if (*key == U)
+	{
+		mat->jPConstBufStruct.pointLightParams.z -= 0.2f;
+	}
+	if (*key == O)
+	{
+		mat->jPConstBufStruct.pointLightParams.z += 0.2f;
 	}
 }
 

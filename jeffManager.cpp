@@ -16,7 +16,7 @@ jeffManager::jeffManager(HWND hWnd)
 
 	jefSound = new jeffAudio();
 	jefSound->loadSound(L"testSound.wav");
-	//jefSound->playSound(L"testSound.wav");
+	jefSound->playSound(L"testSound.wav");
 
 	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
 	jeffModel* jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);

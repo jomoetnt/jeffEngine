@@ -12,7 +12,6 @@ struct Input
 	float4 position : SV_POSITION;
 	float4 worldPosition : POSITIONT;
 	float3 n : NORM;
-	float3 color : COLOR;
 	float2 texcrd : TEXCOORD;
 };
 

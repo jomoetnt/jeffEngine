@@ -3,14 +3,13 @@
 #include "jeffGraphics.h"
 #include "jeffInput.h"
 #include "jeffAudio.h"
+#include "jeffLight.h"
 #include <vector>
 #include <chrono>
 
 namespace jeffNamespace
 {
 	class jeffManager;
-
-	//extern jeffModel* jModel;
 
 	static float delta;
 
@@ -28,6 +27,10 @@ namespace jeffNamespace
 			{
 				delete obj;
 			}
+			for (auto& obj : jLights)
+			{
+				delete obj;
+			}
 		}
 
 		void handleKeyEvent(char keycode);
@@ -39,6 +42,7 @@ namespace jeffNamespace
 
 	private:
 		std::vector<jeffModel*> jModels;
+		std::vector<jeffLight*> jLights;
 
 		jGraphics* jefGraf = nullptr;
 		jeffAudio* jefSound = nullptr;

@@ -13,7 +13,6 @@ namespace jeffNamespace
 		struct jeffVertex
 		{
 			DirectX::XMFLOAT3 position;
-			DirectX::XMFLOAT3 colour;
 			DirectX::XMFLOAT2 texcoord;
 			DirectX::XMFLOAT3 normal;
 		};

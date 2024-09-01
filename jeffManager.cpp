@@ -2,10 +2,6 @@
 
 using namespace jeffNamespace;
 
-//namespace jeffNamespace
-//{
-//	jeffModel* jModel;
-//}
 
 jeffManager::jeffManager(HWND hWnd)
 {
@@ -24,6 +20,10 @@ jeffManager::jeffManager(HWND hWnd)
 	jModel->transformPosition.x += 2.0f;
 	jModels.emplace_back(jModel);
 	jModels.emplace_back(jModel2);
+
+	jeffLight* jLight = new jeffLight();
+	jLight->initObject();
+	jLights.emplace_back(jLight);
 }
 
 int jeffManager::doFrame()
@@ -31,6 +31,9 @@ int jeffManager::doFrame()
 	jefGraf->beginFrame();
 	for (auto &model : jModels)
 	{
+		model->mat->jPConstBufStruct.pointLight = jeffLight::threeToFour(jLights.front()->transformPosition);
+		model->mat->jPConstBufStruct.pointLightColour = jLights.front()->lightColour;
+		model->mat->jPConstBufStruct.pointLightParams = jLights.front()->lightParams;
 		model->draw();
 		jefGraf->jLayout = model->jLayout;
 		jefGraf->jRast = model->jRast;
@@ -59,7 +62,11 @@ void jeffManager::handleKeyEvent(char keycode)
 	JEFF_KEY eventKey = jefInput.handleKeyEvent(keycode);
 	if (eventKey == UNKNOWN) return;
 
-	for (auto &thing : jModels)
+	for (auto& thing : jModels)
+	{
+		thing->handleEvent(JEFF_KEY_EVENT, &eventKey);
+	}
+	for (auto& thing : jLights)
 	{
 		thing->handleEvent(JEFF_KEY_EVENT, &eventKey);
 	}

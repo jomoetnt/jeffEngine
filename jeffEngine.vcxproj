@@ -146,9 +146,12 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="jeffAudio.h" />
+    <ClInclude Include="jeffCamera.h" />
     <ClInclude Include="jeffHelper.h" />
     <ClInclude Include="jeffInput.h" />
     <ClInclude Include="jeffLight.h" />
+    <ClInclude Include="jeffLightDirectional.h" />
+    <ClInclude Include="jeffLightPoint.h" />
     <ClInclude Include="jeffManager.h" />
     <ClInclude Include="jeffMaterialShader.h" />
     <ClInclude Include="jeffEngine.h" />
@@ -164,6 +167,7 @@
     <ClCompile Include="jeffAudio.cpp" />
     <ClCompile Include="jeffEngine.cpp" />
     <ClCompile Include="jeffGraphics.cpp" />
+    <ClCompile Include="jeffInput.cpp" />
     <ClCompile Include="jeffManager.cpp" />
     <ClCompile Include="jeffMaterialShader.cpp" />
     <ClCompile Include="jeffMesh.cpp" />

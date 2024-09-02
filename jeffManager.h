@@ -3,7 +3,6 @@
 #include "jeffGraphics.h"
 #include "jeffInput.h"
 #include "jeffAudio.h"
-#include "jeffLight.h"
 #include <vector>
 #include <chrono>
 
@@ -23,11 +22,8 @@ namespace jeffNamespace
 		~jeffManager()
 		{
 			delete jefGraf;
+			delete jActiveCam;
 			for (auto& obj : jModels)
-			{
-				delete obj;
-			}
-			for (auto& obj : jLights)
 			{
 				delete obj;
 			}
@@ -42,7 +38,9 @@ namespace jeffNamespace
 
 	private:
 		std::vector<jeffModel*> jModels;
-		std::vector<jeffLight*> jLights;
+		jeffLightPoint jPLights[4];
+		jeffLightDirectional jDLight;
+		jeffCamera* jActiveCam = nullptr;
 
 		jGraphics* jefGraf = nullptr;
 		jeffAudio* jefSound = nullptr;

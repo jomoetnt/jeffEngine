@@ -2,6 +2,7 @@ cbuffer jeffVBuf : register(b0)
 {
 	matrix mProj;
 	matrix mTransform;
+	matrix mCam;
 }
 
 struct Input 
@@ -28,6 +29,7 @@ Output main(Input input)
 
 	output.worldPosition = mul(output.position, mTransform);
 	output.position = mul(output.position, mTransform);
+	output.position = mul(output.position, mCam);
 	output.position = mul(output.position, mProj);
 
 	float4 transformedNormal = mul(float4(input.norm, 0.0f), mTransform);

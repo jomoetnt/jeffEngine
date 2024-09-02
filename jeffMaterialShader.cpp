@@ -43,9 +43,15 @@ void jeffMaterialShader::initTexture()
 	hr = jDev->CreateSamplerState(&jSamplerDesc, &jSamState);
 }
 
-void jeffMaterialShader::initConstBuf(float time, DirectX::XMMATRIX transform)
+void jeffMaterialShader::initConstBuf(float time, DirectX::XMMATRIX transform, jeffCamera* camera)
 {
 	jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(transform);
+
+	DirectX::XMMATRIX cam = camera->getTransformMat();
+	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(cam);
+	jVConstBufStruct.cameraMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, cam));
+
+	jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(camera->projectionMatrix);
 
 	D3D11_BUFFER_DESC jVDesc{};
 	jVDesc.ByteWidth = sizeof(jVConstBufStruct);

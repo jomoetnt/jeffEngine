@@ -3,6 +3,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include "jeffCamera.h"
+#include "jeffLightPoint.h"
+#include "jeffLightDirectional.h"
 
 
 namespace jeffNamespace
@@ -14,15 +17,16 @@ namespace jeffNamespace
 		{
 			DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX transformMat = DirectX::XMMatrixIdentity();
+			DirectX::XMMATRIX cameraMat = DirectX::XMMatrixIdentity();
 		} jVConstBufStruct;
 
 		struct
 		{
+			DirectX::XMFLOAT4 pointLights[4] = { DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f) };
+			DirectX::XMFLOAT4 pointLightColours[4] = { DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f) };
+			DirectX::XMFLOAT4 pointLightParams[4] = { DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f) };
 			DirectX::XMFLOAT4 dirLight = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
 			DirectX::XMFLOAT4 dirLightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
-			DirectX::XMFLOAT4 pointLight = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-			DirectX::XMFLOAT4 pointLightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			DirectX::XMFLOAT4 pointLightParams = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 		} jPConstBufStruct;
 
 		ID3D11Device* jDev = nullptr;
@@ -54,12 +58,7 @@ namespace jeffNamespace
 
 		void initTexture();
 
-		void setProjMat(float aspect)
-		{
-			jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveLH(1.0f, aspect, 0.5f, 100.0f));
-		}
-
-		void initConstBuf(float time, DirectX::XMMATRIX transform);
+		void initConstBuf(float time, DirectX::XMMATRIX transform, jeffCamera* camera);
 
 	};
 }

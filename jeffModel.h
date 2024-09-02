@@ -50,11 +50,6 @@ namespace jeffNamespace
 		// Persistent per-object
 		D3D11_VIEWPORT jViewport{};
 		D3D11_RECT jRect{};
-		D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-		D3D11_BUFFER_DESC vBufferDesc;
-		D3D11_BUFFER_DESC iBufferDesc;
-		D3D11_SUBRESOURCE_DATA vInitData{};
-		D3D11_SUBRESOURCE_DATA iInitData{};
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
 
@@ -65,12 +60,12 @@ namespace jeffNamespace
 		void createIBuf();
 		void createInputLayout();
 
-		void draw();
+		void draw(jeffLightPoint* lights, jeffLightDirectional dirLight, jeffCamera* camera);
 		void setRasterizer();
 		void setShaders();
 		void setVBuf();
 		void setIBuf();
-		void setConstantBuffer(float time);
+		void setConstantBuffer(float time, jeffCamera* camera);
 
 		void setInputLayout();
 

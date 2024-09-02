@@ -44,5 +44,13 @@ namespace jeffNamespace
 			time += delta;
 		}
 
+		virtual DirectX::XMMATRIX getTransformMat()
+		{
+			DirectX::XMVECTOR rot = DirectX::XMLoadFloat3(&transformRotation);
+			DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&transformPosition);
+			DirectX::XMVECTOR scale = DirectX::XMLoadFloat3(&transformScale);
+			return DirectX::XMMatrixScalingFromVector(scale) * DirectX::XMMatrixRotationRollPitchYawFromVector(rot) * DirectX::XMMatrixTranslationFromVector(pos);
+		}
+
 	};
 }

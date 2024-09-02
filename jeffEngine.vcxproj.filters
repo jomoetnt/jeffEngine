@@ -60,6 +60,15 @@
     <ClInclude Include="jeffLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffLightPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffLightDirectional.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">
@@ -81,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffMaterialShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

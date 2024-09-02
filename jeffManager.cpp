@@ -10,10 +10,6 @@ jeffManager::jeffManager(HWND hWnd)
 	height = screenSize.bottom - screenSize.top;
 	jefGraf = new jGraphics(hWnd, width, height);
 
-	jefSound = new jeffAudio();
-	jefSound->loadSound(L"testSound.wav");
-	jefSound->playSound(L"testSound.wav");
-
 	jeffModel::graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, jefGraf->jLayout, jefGraf->jRast, width, height);
 	jeffModel* jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);
 	jeffModel* jModel2 = new jeffModel("sphere.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", modelStruct);
@@ -21,9 +17,17 @@ jeffManager::jeffManager(HWND hWnd)
 	jModels.emplace_back(jModel);
 	jModels.emplace_back(jModel2);
 
-	jeffLight* jLight = new jeffLight();
-	jLight->initObject();
-	jLights.emplace_back(jLight);
+	for (int i = 0; i < 4; i++)
+		jPLights[i] = jeffLightPoint();
+
+	jDLight.initObject();
+
+	jActiveCam = new jeffCamera();
+	jActiveCam->setProjMat();
+
+
+	jefSound = new jeffAudio();
+	jefSound->loadSound(L"testSound.wav");
 }
 
 int jeffManager::doFrame()
@@ -31,10 +35,7 @@ int jeffManager::doFrame()
 	jefGraf->beginFrame();
 	for (auto &model : jModels)
 	{
-		model->mat->jPConstBufStruct.pointLight = jeffLight::threeToFour(jLights.front()->transformPosition);
-		model->mat->jPConstBufStruct.pointLightColour = jLights.front()->lightColour;
-		model->mat->jPConstBufStruct.pointLightParams = jLights.front()->lightParams;
-		model->draw();
+		model->draw(jPLights, jDLight, jActiveCam);
 		jefGraf->jLayout = model->jLayout;
 		jefGraf->jRast = model->jRast;
 	}
@@ -61,13 +62,17 @@ void jeffManager::handleKeyEvent(char keycode)
 {
 	JEFF_KEY eventKey = jefInput.handleKeyEvent(keycode);
 	if (eventKey == UNKNOWN) return;
+	//jefSound->playSound(L"testSound.wav");
+	jActiveCam->handleEvent(JEFF_KEY_EVENT, &eventKey);
+
+	jDLight.handleEvent(JEFF_KEY_EVENT, &eventKey);
 
 	for (auto& thing : jModels)
 	{
 		thing->handleEvent(JEFF_KEY_EVENT, &eventKey);
 	}
-	for (auto& thing : jLights)
+	for (auto& thing : jPLights)
 	{
-		thing->handleEvent(JEFF_KEY_EVENT, &eventKey);
+		thing.handleEvent(JEFF_KEY_EVENT, &eventKey);
 	}
 }

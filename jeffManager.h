@@ -10,8 +10,6 @@ namespace jeffNamespace
 {
 	class jeffManager;
 
-	//extern jeffModel* jModel;
-
 	static float delta;
 
 	class jeffManager
@@ -24,6 +22,7 @@ namespace jeffNamespace
 		~jeffManager()
 		{
 			delete jefGraf;
+			delete jActiveCam;
 			for (auto& obj : jModels)
 			{
 				delete obj;
@@ -39,6 +38,9 @@ namespace jeffNamespace
 
 	private:
 		std::vector<jeffModel*> jModels;
+		jeffLightPoint jPLights[4];
+		jeffLightDirectional jDLight;
+		jeffCamera* jActiveCam = nullptr;
 
 		jGraphics* jefGraf = nullptr;
 		jeffAudio* jefSound = nullptr;

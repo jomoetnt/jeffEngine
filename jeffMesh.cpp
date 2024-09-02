@@ -133,11 +133,6 @@ void jeffMesh::handleFace(std::string line, int& i)
     vert2.normal = DirectX::XMFLOAT3(vnormals.data()[vindex2]);
     vert3.normal = DirectX::XMFLOAT3(vnormals.data()[vindex3]);
 
-    DirectX::XMFLOAT3 gray = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-    vert1.colour = DirectX::XMFLOAT3(gray);
-    vert2.colour = DirectX::XMFLOAT3(gray);
-    vert3.colour = DirectX::XMFLOAT3(gray);
-
     vertices.emplace_back(vert1);
     vertices.emplace_back(vert2);
     vertices.emplace_back(vert3);

@@ -32,13 +32,16 @@ void jeffModel::createRasterizer()
 	jRect.top = 0;
 	jRect.bottom = height;
 
+	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
 	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
 }
 
 void jeffModel::createVBuf()
 {
+	D3D11_BUFFER_DESC vBufferDesc{};
 	vBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(mesh.vertices.size() * sizeof(jeffMesh::jeffVertex)), D3D11_BIND_VERTEX_BUFFER);
 
+	D3D11_SUBRESOURCE_DATA vInitData{};
 	vInitData.pSysMem = mesh.vertices.data();
 	vInitData.SysMemPitch = 0;
 	vInitData.SysMemSlicePitch = 0;
@@ -48,8 +51,10 @@ void jeffModel::createVBuf()
 
 void jeffModel::createIBuf()
 {
+	D3D11_BUFFER_DESC iBufferDesc{};
 	iBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(mesh.indices.size() * sizeof(int)), D3D11_BIND_INDEX_BUFFER);
 
+	D3D11_SUBRESOURCE_DATA iInitData{};
 	iInitData.pSysMem = mesh.indices.data();
 	iInitData.SysMemPitch = 0;
 	iInitData.SysMemSlicePitch = 0;
@@ -62,12 +67,21 @@ void jeffModel::createInputLayout()
 	HRESULT hr = jDev->CreateInputLayout(jLayoutDescs, sizeof(jLayoutDescs) / sizeof(D3D11_INPUT_ELEMENT_DESC), mat->jVShaderBlob->GetBufferPointer(), mat->jVShaderBlob->GetBufferSize(), &jLayout);
 }
 
-void jeffModel::draw()
+void jeffModel::draw(jeffLightPoint* lights, jeffLightDirectional dirLight, jeffCamera* camera)
 {
+	for (int i = 0; i < 4; i++)
+	{
+		mat->jPConstBufStruct.pointLights[i] = jeffLight::threeToFour(lights[i].transformPosition);
+		mat->jPConstBufStruct.pointLightColours[i] = DirectX::XMFLOAT4(lights[i].lightColour);
+		mat->jPConstBufStruct.pointLightParams[i] = jeffLight::jeffClamp(lights[i].lightParams);
+	}
+	mat->jPConstBufStruct.dirLight = jeffLight::threeToFour(dirLight.transformRotation);
+	mat->jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(dirLight.lightColour);
+
 	setRasterizer();
 	setVBuf();
 	setIBuf();
-	setConstantBuffer(time);
+	setConstantBuffer(time, camera);
 	setShaders();
 	setInputLayout();
 	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
@@ -92,13 +106,9 @@ void jeffModel::setIBuf()
 	jContext->IASetIndexBuffer(jIndexBuf, DXGI_FORMAT_R32_UINT, 0);
 }
 
-void jeffModel::setConstantBuffer(float time)
+void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 {
-	DirectX::XMVECTOR rot = DirectX::XMLoadFloat3(&transformRotation);
-	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&transformPosition);
-	DirectX::XMVECTOR scale = DirectX::XMLoadFloat3(&transformScale);
-	transformMat = DirectX::XMMatrixScalingFromVector(scale) * DirectX::XMMatrixRotationRollPitchYawFromVector(rot) * DirectX::XMMatrixTranslationFromVector(pos);
-	mat->initConstBuf((float)(height * 1.0f / width), time, transformMat);
+	mat->initConstBuf(time, getTransformMat(), camera);
 }
 
 void jeffModel::setInputLayout()
@@ -121,10 +131,6 @@ void jeffModel::handleKeyEvent(JEFF_KEY* key)
 {
 	if (mesh.name.compare("Cube") == 0)
 		return;
-	if (*key == W)
-	{
-		transformPosition.z += 0.5f;
-	}
 }
 
 void jeffModel::tick(float delta)

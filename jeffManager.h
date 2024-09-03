@@ -3,6 +3,7 @@
 #include "jeffGraphics.h"
 #include "jeffInput.h"
 #include "jeffAudio.h"
+#include "jeffScene.h"
 #include <vector>
 #include <chrono>
 
@@ -22,11 +23,7 @@ namespace jeffNamespace
 		~jeffManager()
 		{
 			delete jefGraf;
-			delete jActiveCam;
-			for (auto& obj : jModels)
-			{
-				delete obj;
-			}
+			delete jScene;
 		}
 
 		void handleKeyEvent(char keycode);
@@ -37,14 +34,11 @@ namespace jeffNamespace
 		void playSound(LPCWSTR filename);
 
 	private:
-		std::vector<jeffModel*> jModels;
-		jeffLightPoint jPLights[4];
-		jeffLightDirectional jDLight;
-		jeffCamera* jActiveCam = nullptr;
-
 		jGraphics* jefGraf = nullptr;
 		jeffAudio* jefSound = nullptr;
 		jeffInput jefInput;
+
+		jeffScene* jScene = nullptr;
 
 		float refreshTimer = 0.0f;
 		int quit = 0;

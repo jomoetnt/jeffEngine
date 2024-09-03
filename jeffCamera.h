@@ -14,10 +14,9 @@ namespace jeffNamespace
 
 		DirectX::XMMATRIX projectionMatrix;
 
-
-		void initObject() override
+		jeffCamera()
 		{
-
+			setProjMat();
 		}
 
 		void handleKeyEvent(JEFF_KEY* key) override

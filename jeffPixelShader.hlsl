@@ -21,7 +21,7 @@ SamplerState jLinearSample : register(s0);
 float4 main(Input input) : SV_TARGET
 {
 	float3 diffuseColour = jDiffuse.Sample(jLinearSample, input.texcrd);
-	float3 ambientLight = float3(0.05f, 0.05f, 0.05f);
+	float3 ambientLight = float3(0.1f, 0.1f, 0.1f);
 
 	float3 realWorldPos = float3(input.worldPosition.x, input.worldPosition.y, input.worldPosition.z);
 	float3 realNormal = normalize(input.n);

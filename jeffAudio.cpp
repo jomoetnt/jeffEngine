@@ -26,19 +26,25 @@ void jeffAudio::loadSound(LPCWSTR filename)
 	bufferMap[filename].Flags = XAUDIO2_END_OF_STREAM;
 
 	hr = jAudio->CreateSourceVoice(&jSourceVoice, (WAVEFORMATEX*)&wfx);
+	if (FAILED(hr)) throw std::runtime_error("error creating source voice");
 }
 
 void jeffAudio::playSound(LPCWSTR filename)
 {
 	HRESULT hr = jSourceVoice->SubmitSourceBuffer(&bufferMap[filename]);
+	if (FAILED(hr)) throw std::runtime_error("error submitting source buffer");
 	hr = jSourceVoice->Start(0);
+	if (FAILED(hr)) throw std::runtime_error("error playing sound");
 }
 
 HRESULT jeffAudio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition)
 {
 	HRESULT hr = S_OK;
 	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, 0, NULL, FILE_BEGIN))
+	{
+		if (FAILED(hr)) throw std::runtime_error("error finding chunk");
 		return HRESULT_FROM_WIN32(GetLastError());
+	}
 
 	DWORD dwChunkType = 0;
 	DWORD dwChunkDataSize = 0;
@@ -67,7 +73,10 @@ HRESULT jeffAudio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWO
 
 		default:
 			if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, dwChunkDataSize, NULL, FILE_CURRENT))
+			{
+				if (FAILED(hr)) throw std::runtime_error("error finding chunk");
 				return HRESULT_FROM_WIN32(GetLastError());
+			}
 		}
 
 		dwOffset += sizeof(DWORD) * 2;
@@ -81,7 +90,11 @@ HRESULT jeffAudio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWO
 
 		dwOffset += dwChunkDataSize;
 
-		if (bytesRead >= dwRIFFDataSize) return S_FALSE;
+		if (bytesRead >= dwRIFFDataSize)
+		{
+			if (FAILED(hr)) throw std::runtime_error("error finding chunk");
+			return S_FALSE;
+		}
 
 	}
 
@@ -91,8 +104,16 @@ HRESULT jeffAudio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWO
 HRESULT jeffAudio::ReadChunkData(HANDLE hFile, void* buffer, DWORD bufSize, DWORD bufOffset)
 {
 	HRESULT hr = S_OK;
-	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, bufOffset, NULL, FILE_BEGIN)) return HRESULT_FROM_WIN32(GetLastError());
+	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, bufOffset, NULL, FILE_BEGIN))
+	{
+		if (FAILED(hr)) throw std::runtime_error("error finding chunk");
+		return HRESULT_FROM_WIN32(GetLastError());
+	}
 	DWORD read;
-	if (0 == ReadFile(hFile, buffer, bufSize, &read, NULL)) hr = HRESULT_FROM_WIN32(GetLastError());
+	if (0 == ReadFile(hFile, buffer, bufSize, &read, NULL))
+	{
+		hr = HRESULT_FROM_WIN32(GetLastError());
+		if (FAILED(hr)) throw std::runtime_error("error finding chunk");
+	}
 	return hr;
 }

@@ -26,7 +26,7 @@ using namespace jeffNamespace;
 jeffManager* jMan;
 int quit = 0;
 
-void timer_start(std::function<void(void)> func, unsigned int interval)
+static void timer_start(std::function<void(void)> func, unsigned int interval)
 {
     std::thread([func, interval]()
     {
@@ -39,7 +39,7 @@ void timer_start(std::function<void(void)> func, unsigned int interval)
     }).detach();
 }
 
-void runPhysics()
+static void runPhysics()
 {
     jMan->doPhysicsTick((float)(PHYSICS_FRAMETIME / 1000.0f));
     jMan->doFrame();

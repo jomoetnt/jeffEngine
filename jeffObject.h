@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <map>
+#include <array>
 #include <string>
 #include <DirectXMath.h>
 #include "jeffInput.h"
@@ -25,7 +25,13 @@ namespace jeffNamespace
 
 		float time = 0.0f;
 
-		virtual void initObject() = 0;
+		virtual void initObject() 
+		{
+			for (auto& child : children)
+			{
+				child->initObject();
+			}
+		}
 
 		virtual void handleEvent(JEFF_EVENT_TYPE eventType, void* jParams)
 		{
@@ -35,22 +41,38 @@ namespace jeffNamespace
 				handleKeyEvent((JEFF_KEY*)jParams); 
 				break;
 			}
+
+			for (auto& child : children)
+			{
+				child->handleEvent(eventType, jParams);
+			}
 		}
 
-		virtual void handleKeyEvent(JEFF_KEY* key) = 0;
+		virtual void handleKeyEvent(JEFF_KEY* key) {}
 
 		virtual void tick(float delta)
 		{
 			time += delta;
+			for (auto& child : children)
+			{
+				child->tick(delta);
+			}
 		}
 
-		virtual DirectX::XMMATRIX getTransformMat()
+		DirectX::XMMATRIX getTransformMat() const
 		{
 			DirectX::XMVECTOR rot = DirectX::XMLoadFloat3(&transformRotation);
 			DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&transformPosition);
 			DirectX::XMVECTOR scale = DirectX::XMLoadFloat3(&transformScale);
 			return DirectX::XMMatrixScalingFromVector(scale) * DirectX::XMMatrixRotationRollPitchYawFromVector(rot) * DirectX::XMMatrixTranslationFromVector(pos);
 		}
+
+		void addChild(jeffObject* child)
+		{
+			child->parent = this;
+			children.emplace_back(child);
+		}
+
 
 	};
 }

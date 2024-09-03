@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\jeffObjects">
+      <UniqueIdentifier>{5bdf3bac-7f75-4b98-a20d-5be3bca87e7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -30,9 +33,6 @@
     <ClInclude Include="jeffGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jeffMaterialShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="jeffMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,29 +45,32 @@
     <ClInclude Include="jeffManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jeffObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jeffModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="jeffAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jeffNetworking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jeffLight.h">
+    <ClInclude Include="jeffScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jeffCamera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
-    <ClInclude Include="jeffLightPoint.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="jeffLight.h">
+      <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
     <ClInclude Include="jeffLightDirectional.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffLightPoint.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffModel.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffObject.h">
+      <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffAudio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="jeffMaterialShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffInput.cpp">

@@ -153,13 +153,13 @@
     <ClInclude Include="jeffLightDirectional.h" />
     <ClInclude Include="jeffLightPoint.h" />
     <ClInclude Include="jeffManager.h" />
-    <ClInclude Include="jeffMaterialShader.h" />
     <ClInclude Include="jeffEngine.h" />
     <ClInclude Include="jeffGraphics.h" />
     <ClInclude Include="jeffMesh.h" />
     <ClInclude Include="jeffNetworking.h" />
     <ClInclude Include="jeffObject.h" />
     <ClInclude Include="jeffModel.h" />
+    <ClInclude Include="jeffScene.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -169,7 +169,6 @@
     <ClCompile Include="jeffGraphics.cpp" />
     <ClCompile Include="jeffInput.cpp" />
     <ClCompile Include="jeffManager.cpp" />
-    <ClCompile Include="jeffMaterialShader.cpp" />
     <ClCompile Include="jeffMesh.cpp" />
     <ClCompile Include="jeffModel.cpp" />
   </ItemGroup>

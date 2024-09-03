@@ -10,20 +10,15 @@ namespace jeffNamespace
 		// Quadratic attenuation, linear attenuation, constant attenuation
 		DirectX::XMFLOAT4 lightParams = DirectX::XMFLOAT4(0.4f, 0.6f, 0.2f, 0.0f);
 
-		void initObject() override
-		{
-			
-		}
-
 		void handleKeyEvent(JEFF_KEY* key) override
 		{
 			if (*key == I)
 			{
-				lightParams.x += 0.2f;
+				lightColour.w += 0.2f;
 			}
 			if (*key == J)
 			{
-				lightParams.y -= 0.2f;
+				lightColour.w -= 0.2f;
 			}
 			if (*key == K)
 			{

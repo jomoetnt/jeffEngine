@@ -1,5 +1,6 @@
 #include "jeffGraphics.h"
 #include <stdio.h>
+#include <d3dcompiler.h>
 
 using namespace jeffNamespace;
 
@@ -10,6 +11,7 @@ using namespace jeffNamespace;
 jGraphics::jGraphics(HWND handle, int width, int height)
 {
 	hwnd = handle;
+	screenWidth = width; screenHeight = height;
 	initDevice();
 }
 
@@ -32,6 +34,8 @@ jGraphics::~jGraphics()
 	jRTarget->Release();
 	jContext->Release();
 	jDev->Release();
+	jVShaderBlob->Release(); jPShaderBlob->Release();
+	jVShader->Release(); jPShader->Release();
 
 	jSurface->Release();
 	jSwap->Release();
@@ -41,6 +45,8 @@ void jGraphics::initDevice()
 {
 	makeSwapchain();
 	makeRenderTarget();
+	createInputLayout();
+	createRasterizer();
 
 	init2D();
 
@@ -64,11 +70,13 @@ void jGraphics::makeSwapchain()
 	jSDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	jSDesc.Flags = 0;
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, nullptr, 0, D3D11_SDK_VERSION, &jSDesc, &jSwap, &jDev, nullptr, &jContext);
+	if (FAILED(hr)) throw std::runtime_error("error making swapchain");
 }
 
 void jGraphics::makeRenderTarget()
 {
 	HRESULT hr = jSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&jBackBuf);
+	if (FAILED(hr)) throw std::runtime_error("error getting backbuffer");
 
 	D3D11_RENDER_TARGET_VIEW_DESC viewDesc{};
 	viewDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -78,6 +86,7 @@ void jGraphics::makeRenderTarget()
 	if (hr != S_OK)
 		return;
 	hr = jDev->CreateRenderTargetView(jBackBuf, nullptr, &jRTarget);
+	if (FAILED(hr)) throw std::runtime_error("error creating render target view");
 
 	makeZBuf();
 }
@@ -89,6 +98,7 @@ void jGraphics::makeZBuf()
 		D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS,
 		D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS);
 	HRESULT hr = jDev->CreateDepthStencilState(&depthDesc, &jDepthState);
+	if (FAILED(hr)) throw std::runtime_error("error creating depth stencil state");
 	jContext->OMSetDepthStencilState(jDepthState, 1);
 
 	D3D11_TEXTURE2D_DESC descBuf;
@@ -106,8 +116,7 @@ void jGraphics::makeZBuf()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 	hr = jDev->CreateTexture2D(&descDepth, nullptr, &jDepthStencil);
-	if (!SUCCEEDED(hr))
-		throw std::runtime_error("could not make depth stencil");
+	if (!SUCCEEDED(hr)) throw std::runtime_error("could not make depth stencil");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
 	descDSV.Format = descDepth.Format;
@@ -116,17 +125,73 @@ void jGraphics::makeZBuf()
 	descDSV.Flags = 0;
 
 	hr = jDev->CreateDepthStencilView(jDepthStencil, &descDSV, &jDSV);
+	if (FAILED(hr)) throw std::runtime_error("error creating depth stencil view");
 
 	jContext->OMSetRenderTargets(1, &jRTarget, jDSV);
+}
+
+void jGraphics::createInputLayout()
+{
+	ID3DBlob* vErr; ID3DBlob* pErr;
+	D3DCreateBlob(256, &vErr); D3DCreateBlob(256, &pErr);
+
+	int jFlags1 = D3DCOMPILE_PARTIAL_PRECISION | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
+#ifdef NDEBUG
+	jFlags1 |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
+#else
+	jFlags1 |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	HRESULT hr = D3DCompileFromFile(L"jeffVertexShader.hlsl", NULL, NULL, "main", "vs_5_0", jFlags1, 0, &jVShaderBlob, &vErr);
+	if (FAILED(hr)) throw std::runtime_error("error compiling vertex shader");
+	hr = D3DCompileFromFile(L"jeffPixelShader.hlsl", NULL, NULL, "main", "ps_5_0", jFlags1, 0, &jPShaderBlob, &pErr);
+	if (FAILED(hr)) throw std::runtime_error("error compiling pixel shader");
+
+	hr = jDev->CreateVertexShader(jVShaderBlob->GetBufferPointer(), jVShaderBlob->GetBufferSize(), nullptr, &jVShader);
+	if (FAILED(hr)) throw std::runtime_error("error creating vertex shader");
+	hr = jDev->CreatePixelShader(jPShaderBlob->GetBufferPointer(), jPShaderBlob->GetBufferSize(), nullptr, &jPShader);
+	if (FAILED(hr)) throw std::runtime_error("error creating pixel shader");
+
+	jContext->VSSetShader(jVShader, 0, 0);
+	jContext->PSSetShader(jPShader, 0, 0);
+
+	hr = jDev->CreateInputLayout(jLayoutDescs, sizeof(jLayoutDescs) / sizeof(D3D11_INPUT_ELEMENT_DESC), jVShaderBlob->GetBufferPointer(), jVShaderBlob->GetBufferSize(), &jLayout);
+	if (FAILED(hr)) throw std::runtime_error("error creating input layout");
+	jContext->IASetInputLayout(jLayout);
+}
+
+void jGraphics::createRasterizer()
+{
+	D3D11_VIEWPORT jViewport{};
+	jViewport.TopLeftX = 0.0f;
+	jViewport.TopLeftY = 0.0f;
+	jViewport.Width = (float)screenWidth;
+	jViewport.Height = (float)screenHeight;
+	jViewport.MinDepth = 0.0f;
+	jViewport.MaxDepth = 1.0f;
+
+	D3D11_RECT jRect{};
+	jRect.left = 0;
+	jRect.right = screenWidth;
+	jRect.top = 0;
+	jRect.bottom = screenHeight;
+
+	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
+	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
+	if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
+
+	jContext->RSSetViewports(1, &jViewport);
+	jContext->RSSetScissorRects(1, &jRect);
+	jContext->RSSetState(jRast);
 }
 
 void jGraphics::init2D()
 {
 	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &jD2DFactory);
+	if (FAILED(hr)) throw std::runtime_error("error creating direct2d factory");
 
 	hr = jSwap->GetBuffer(0, __uuidof(IDXGISurface), (void**)&jSurface);
-	if (!SUCCEEDED(hr))
-		return;
+	if (FAILED(hr)) throw std::runtime_error("error getting backbuffer surface");
 
 	float dpi = (float)GetDpiForWindow(hwnd);
 
@@ -134,11 +199,13 @@ void jGraphics::init2D()
 		D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
 		dpi, dpi);
 	hr = jD2DFactory->CreateDxgiSurfaceRenderTarget(jSurface, &props, &jRT);
+	if (FAILED(hr)) throw std::runtime_error("error creating surface render target");
 
 	jRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &jBrush);
 
 	// DirectWrite
 	hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&jWriteFactory));
+	if (FAILED(hr)) throw std::runtime_error("error creating directwrite factory");
 
 	hr = jWriteFactory->CreateTextFormat(L"Arial",
 		NULL,
@@ -146,9 +213,12 @@ void jGraphics::init2D()
 		36.0f,
 		L"en-us",
 		&jTextFormat);
+	if (FAILED(hr)) throw std::runtime_error("error creating text format");
 
 	hr = jTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	if (FAILED(hr)) throw std::runtime_error("error setting text alignment");
 	hr = jTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	if (FAILED(hr)) throw std::runtime_error("error setting paragraph alignment");
 }
 
 //--------------------------------------------------------
@@ -164,6 +234,7 @@ void jGraphics::draw2D()
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
 
 	HRESULT hr = jRT->EndDraw();
+	if (FAILED(hr)) throw std::runtime_error("error ending 2d draw");
 }
 
 void jGraphics::beginFrame()

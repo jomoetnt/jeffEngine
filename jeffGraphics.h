@@ -16,12 +16,10 @@ namespace jeffNamespace
 		~jGraphics();
 
 		int frameRate = 0;
-		int width = 0; int height = 0;
+		int screenWidth = 0; int screenHeight = 0;
 
 		ID3D11Device* jDev;
 		ID3D11DeviceContext* jContext;
-		ID3D11InputLayout* jLayout;
-		ID3D11RasterizerState* jRast;
 
 		void draw2D();
 
@@ -29,17 +27,30 @@ namespace jeffNamespace
 		void endFrame();
 
 	private:
+		D3D11_INPUT_ELEMENT_DESC jLayoutDescs[3] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
 		HWND hwnd;
 
 		IDXGISwapChain* jSwap;
 		IDXGISurface* jSurface;
 
 		// D3D
-		ID3D11RenderTargetView* jRTarget;
+		ID3D11InputLayout* jLayout = nullptr;
+		ID3D11RasterizerState* jRast = nullptr;
+		ID3D11RenderTargetView* jRTarget = nullptr;
 		ID3D11Texture2D* jBackBuf = nullptr;
 		ID3D11Texture2D* jDepthStencil = NULL;
 		ID3D11DepthStencilView* jDSV;
 		ID3D11DepthStencilState* jDepthState;
+		ID3DBlob* jVShaderBlob = NULL;
+		ID3DBlob* jPShaderBlob = NULL;
+		ID3D11VertexShader* jVShader = NULL;
+		ID3D11PixelShader* jPShader = NULL;
 
 		// D2D and DirectWrite
 		ID2D1Factory* jD2DFactory;
@@ -55,5 +66,8 @@ namespace jeffNamespace
 		void makeSwapchain();
 		void makeRenderTarget();
 		void makeZBuf();
+		void createInputLayout();
+		void createRasterizer();
+
 	};
 }

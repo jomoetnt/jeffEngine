@@ -1,39 +1,38 @@
 #include "jeffModel.h"	
+#include <DDSTextureLoader.h>
 
 using namespace jeffNamespace;
 
 jeffModel::jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR pShaderFilename, graphicsStruct graf)
 {
-	jDev = graf.jDev; jContext = graf.jContext; jLayout = graf.jLayout; jRast = graf.jRast; width = graf.width; height = graf.height;
-
-	mat = new jeffMaterialShader(jDev, jContext, vShaderFilename, pShaderFilename);
+	jDev = graf.jDev; jContext = graf.jContext; width = graf.width; height = graf.height;
 
 	mesh.loadFromObj(meshFilename);
 
-	createRasterizer();
 	createVBuf();
 	createIBuf();
-	createInputLayout();
+	initTexture();
 
 	initObject();
 }
 
-void jeffModel::createRasterizer()
+void jeffModel::initTexture()
 {
-	jViewport.TopLeftX = 0.0f;
-	jViewport.TopLeftY = 0.0f;
-	jViewport.Width = (float)width;
-	jViewport.Height = (float)height;
-	jViewport.MinDepth = 0.0f;
-	jViewport.MaxDepth = 1.0f;
+	HRESULT hr = DirectX::CreateDDSTextureFromFile(jDev, jContext, L"testimage.dds", (ID3D11Resource**)&jDiffuseTexture, &jSRView);
+	if (FAILED(hr)) throw std::runtime_error("error creating texture");
 
-	jRect.left = 0;
-	jRect.right = width;
-	jRect.top = 0;
-	jRect.bottom = height;
-
-	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
+	D3D11_SAMPLER_DESC jSamplerDesc{};
+	jSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	jSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	jSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	jSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	jSamplerDesc.MipLODBias = 0;
+	jSamplerDesc.MaxAnisotropy = 1;
+	jSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	jSamplerDesc.MinLOD = 0;
+	jSamplerDesc.MaxLOD = 0;
+	hr = jDev->CreateSamplerState(&jSamplerDesc, &jSamState);
+	if (FAILED(hr)) throw std::runtime_error("error creating sampler state");
 }
 
 void jeffModel::createVBuf()
@@ -47,6 +46,7 @@ void jeffModel::createVBuf()
 	vInitData.SysMemSlicePitch = 0;
 
 	HRESULT hr = jDev->CreateBuffer(&vBufferDesc, &vInitData, &jVertBuf);
+	if (FAILED(hr)) throw std::runtime_error("error creating vertex buffer");
 }
 
 void jeffModel::createIBuf()
@@ -60,38 +60,24 @@ void jeffModel::createIBuf()
 	iInitData.SysMemSlicePitch = 0;
 
 	HRESULT hr = jDev->CreateBuffer(&iBufferDesc, &iInitData, &jIndexBuf);
+	if (FAILED(hr)) throw std::runtime_error("error creating index buffer");
 }
 
-void jeffModel::createInputLayout()
-{
-	HRESULT hr = jDev->CreateInputLayout(jLayoutDescs, sizeof(jLayoutDescs) / sizeof(D3D11_INPUT_ELEMENT_DESC), mat->jVShaderBlob->GetBufferPointer(), mat->jVShaderBlob->GetBufferSize(), &jLayout);
-}
-
-void jeffModel::draw(jeffLightPoint* lights, jeffLightDirectional dirLight, jeffCamera* camera)
+void jeffModel::draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		mat->jPConstBufStruct.pointLights[i] = jeffLight::threeToFour(lights[i].transformPosition);
-		mat->jPConstBufStruct.pointLightColours[i] = DirectX::XMFLOAT4(lights[i].lightColour);
-		mat->jPConstBufStruct.pointLightParams[i] = jeffLight::jeffClamp(lights[i].lightParams);
+		jPConstBufStruct.pointLights[i] = jeffLight::threeToFour(lights[i]->transformPosition);
+		jPConstBufStruct.pointLightColours[i] = DirectX::XMFLOAT4(lights[i]->lightColour);
+		jPConstBufStruct.pointLightParams[i] = jeffLight::jeffClamp(lights[i]->lightParams);
 	}
-	mat->jPConstBufStruct.dirLight = jeffLight::threeToFour(dirLight.transformRotation);
-	mat->jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(dirLight.lightColour);
+	jPConstBufStruct.dirLight = jeffLight::threeToFour(dirLight->transformRotation);
+	jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(dirLight->lightColour);
 
-	setRasterizer();
 	setVBuf();
 	setIBuf();
 	setConstantBuffer(time, camera);
-	setShaders();
-	setInputLayout();
 	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
-}
-
-void jeffModel::setRasterizer()
-{
-	jContext->RSSetViewports(1, &jViewport);
-	jContext->RSSetScissorRects(1, &jRect);
-	jContext->RSSetState(jRast);
 }
 
 void jeffModel::setVBuf()
@@ -108,29 +94,56 @@ void jeffModel::setIBuf()
 
 void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 {
-	mat->initConstBuf(time, getTransformMat(), camera);
-}
+	jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(getTransformMat());
 
-void jeffModel::setInputLayout()
-{
-	jContext->IASetInputLayout(jLayout);
-}
+	DirectX::XMMATRIX cam = camera->getTransformMat();
+	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(cam);
+	jVConstBufStruct.cameraMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, cam));
 
-void jeffModel::setShaders()
-{
-	jContext->VSSetShader(mat->jVShader, 0, 0);
-	jContext->PSSetShader(mat->jPShader, 0, 0);
+	jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(camera->projectionMatrix);
+
+	D3D11_BUFFER_DESC jVDesc{};
+	jVDesc.ByteWidth = sizeof(jVConstBufStruct);
+	jVDesc.Usage = D3D11_USAGE_DYNAMIC;
+	jVDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	jVDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	jVDesc.MiscFlags = 0;
+	jVDesc.StructureByteStride = 0;
+
+	D3D11_BUFFER_DESC jPDesc{};
+	jPDesc.ByteWidth = sizeof(jPConstBufStruct);
+	jPDesc.Usage = D3D11_USAGE_DYNAMIC;
+	jPDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	jPDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	jPDesc.MiscFlags = 0;
+	jPDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA jVInitData{};
+	jVInitData.pSysMem = &jVConstBufStruct;
+	jVInitData.SysMemPitch = 0;
+	jVInitData.SysMemSlicePitch = 0;
+
+	D3D11_SUBRESOURCE_DATA jPInitData{};
+	jPInitData.pSysMem = &jPConstBufStruct;
+	jPInitData.SysMemPitch = 0;
+	jPInitData.SysMemSlicePitch = 0;
+
+	HRESULT hr = jDev->CreateBuffer(&jVDesc, &jVInitData, &jVConstBuf);
+	if (FAILED(hr)) throw std::runtime_error("error creating vertex constant buffer");
+	jContext->VSSetConstantBuffers(0, 1, &jVConstBuf);
+
+	hr = jDev->CreateBuffer(&jPDesc, &jPInitData, &jPConstBuf);
+	if (FAILED(hr)) throw std::runtime_error("error creating pixel constant buffer");
+	jContext->PSSetConstantBuffers(1, 1, &jPConstBuf);
+
+	jContext->PSSetShaderResources(0, 1, &jSRView);
+	jContext->PSSetSamplers(0, 1, &jSamState);
 }
 
 void jeffModel::initObject()
 {
 	transformPosition.z += 5.0f;
-}
-
-void jeffModel::handleKeyEvent(JEFF_KEY* key)
-{
-	if (mesh.name.compare("Cube") == 0)
-		return;
+	jeffObject::initObject();
 }
 
 void jeffModel::tick(float delta)

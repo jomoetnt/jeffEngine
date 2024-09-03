@@ -60,7 +60,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             line = line.erase(0, 2);
             std::vector<std::string> components = jeffHelper::split(line, " ");
 
-            DirectX::XMFLOAT3 vpos = DirectX::XMFLOAT3(std::stof(components.data()[0]), std::stof(components.data()[1]), std::stof(components.data()[2]));
+            DirectX::XMFLOAT3 vpos = DirectX::XMFLOAT3(std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
             vpositions.emplace_back(vpos);
             return;
         }
@@ -70,7 +70,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             line = line.erase(0, 3);
             std::vector<std::string> components = jeffHelper::split(line, " ");
 
-            DirectX::XMFLOAT3 vnorm = DirectX::XMFLOAT3(std::stof(components.data()[0]), std::stof(components.data()[1]), std::stof(components.data()[2]));
+            DirectX::XMFLOAT3 vnorm = DirectX::XMFLOAT3(std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
             vnormals.emplace_back(vnorm);
             return;
         }
@@ -80,7 +80,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             line = line.erase(0, 3);
             std::vector<std::string> components = jeffHelper::split(line, " ");
 
-            DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components.data()[0]), std::stof(components.data()[1]));
+            DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components[0]), std::stof(components[1]));
             vtexcoords.emplace_back(vtex);
             return;
         }
@@ -100,38 +100,38 @@ void jeffMesh::handleFace(std::string line, int& i)
     line = line.erase(0, 2);
     std::vector<std::string> components = jeffHelper::split(line, " ");
 
-    std::vector<std::string> indices1 = jeffHelper::split(components.data()[0], "/");
-    std::vector<std::string> indices2 = jeffHelper::split(components.data()[1], "/");
-    std::vector<std::string> indices3 = jeffHelper::split(components.data()[2], "/");
+    std::vector<std::string> indices1 = jeffHelper::split(components[0], "/");
+    std::vector<std::string> indices2 = jeffHelper::split(components[1], "/");
+    std::vector<std::string> indices3 = jeffHelper::split(components[2], "/");
 
     jeffVertex vert1{};
     jeffVertex vert2{};
     jeffVertex vert3{};
 
     // Subtract 1 because obj is not zero-indexed
-    int vindex1 = std::stoi(indices1.data()[0]) - 1;
-    int vindex2 = std::stoi(indices2.data()[0]) - 1;
-    int vindex3 = std::stoi(indices3.data()[0]) - 1;
+    int vindex1 = std::stoi(indices1[0]) - 1;
+    int vindex2 = std::stoi(indices2[0]) - 1;
+    int vindex3 = std::stoi(indices3[0]) - 1;
 
-    vert1.position = DirectX::XMFLOAT3(vpositions.data()[vindex1]);
-    vert2.position = DirectX::XMFLOAT3(vpositions.data()[vindex2]);
-    vert3.position = DirectX::XMFLOAT3(vpositions.data()[vindex3]);
+    vert1.position = DirectX::XMFLOAT3(vpositions[vindex1]);
+    vert2.position = DirectX::XMFLOAT3(vpositions[vindex2]);
+    vert3.position = DirectX::XMFLOAT3(vpositions[vindex3]);
 
-    vindex1 = std::stoi(indices1.data()[1]) - 1;
-    vindex2 = std::stoi(indices2.data()[1]) - 1;
-    vindex3 = std::stoi(indices3.data()[1]) - 1;
+    vindex1 = std::stoi(indices1[1]) - 1;
+    vindex2 = std::stoi(indices2[1]) - 1;
+    vindex3 = std::stoi(indices3[1]) - 1;
 
-    vert1.texcoord = DirectX::XMFLOAT2(vtexcoords.data()[vindex1]);
-    vert2.texcoord = DirectX::XMFLOAT2(vtexcoords.data()[vindex2]);
-    vert3.texcoord = DirectX::XMFLOAT2(vtexcoords.data()[vindex3]);
+    vert1.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex1]);
+    vert2.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex2]);
+    vert3.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex3]);
 
-    vindex1 = std::stoi(indices1.data()[2]) - 1;
-    vindex2 = std::stoi(indices2.data()[2]) - 1;
-    vindex3 = std::stoi(indices3.data()[2]) - 1;
+    vindex1 = std::stoi(indices1[2]) - 1;
+    vindex2 = std::stoi(indices2[2]) - 1;
+    vindex3 = std::stoi(indices3[2]) - 1;
 
-    vert1.normal = DirectX::XMFLOAT3(vnormals.data()[vindex1]);
-    vert2.normal = DirectX::XMFLOAT3(vnormals.data()[vindex2]);
-    vert3.normal = DirectX::XMFLOAT3(vnormals.data()[vindex3]);
+    vert1.normal = DirectX::XMFLOAT3(vnormals[vindex1]);
+    vert2.normal = DirectX::XMFLOAT3(vnormals[vindex2]);
+    vert3.normal = DirectX::XMFLOAT3(vnormals[vindex3]);
 
     vertices.emplace_back(vert1);
     vertices.emplace_back(vert2);

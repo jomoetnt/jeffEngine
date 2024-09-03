@@ -1,8 +1,9 @@
 #pragma once
 
 #include <xaudio2.h>
-#include <map>
+#include <unordered_map>
 #include <string>
+#include <stdexcept>
 
 class jeffAudio
 {
@@ -28,7 +29,7 @@ private:
 	IXAudio2MasteringVoice* jMasterVoice = nullptr;
 	IXAudio2SourceVoice* jSourceVoice = nullptr;
 
-	std::map<std::wstring, XAUDIO2_BUFFER> bufferMap;
+	std::unordered_map<std::wstring, XAUDIO2_BUFFER> bufferMap;
 
 	HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition);
 

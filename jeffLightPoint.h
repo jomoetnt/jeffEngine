@@ -26,7 +26,7 @@ namespace jeffNamespace
 			}
 			if (*key == L)
 			{
-				lightParams.y += 0.2f;
+				lightParams.x += 0.2f;
 			}
 			if (*key == U)
 			{

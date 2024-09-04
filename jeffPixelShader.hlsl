@@ -20,23 +20,18 @@ SamplerState jLinearSample : register(s0);
 
 float4 main(Input input) : SV_TARGET
 {
-	float3 diffuseColour = jDiffuse.Sample(jLinearSample, input.texcrd);
-	float3 ambientLight = float3(0.1f, 0.1f, 0.1f);
+	float4 diffuseColour = jDiffuse.Sample(jLinearSample, input.texcrd);
+	float4 ambientLight = float4(0.05f, 0.05f, 0.05f, 1.0f);
 
-	float3 realWorldPos = float3(input.worldPosition.x, input.worldPosition.y, input.worldPosition.z);
-	float3 realNormal = normalize(input.n);
+	float4 realNormal = float4(normalize(input.n), 0.0f);
 
-	float3 realDirLight = -normalize(float3(dirLight.x, dirLight.y, dirLight.z));
-	float3 realDirLightColour = dirLightColour.w * float3(dirLightColour.x, dirLightColour.y, dirLightColour.z);
+	float4 realDirLight = -normalize(dirLight);
 
-	float3 brightness = dot(realNormal, realDirLight);
-	float3 colour = brightness * diffuseColour * realDirLightColour;
+	float4 brightness = dot(realNormal, realDirLight);
+	float4 colour = brightness * diffuseColour * dirLightColour * dirLightColour.w;
 	for (int i = 0; i < 4; i++)
 	{
-		float3 realPointLight = float3(pointLight[i].x, pointLight[i].y, pointLight[i].z);
-		float3 realPointLightColour = pointLightColour[i].w * float3(pointLightColour[i].x, pointLightColour[i].y, pointLightColour[i].z);
-
-		float3 ray = realWorldPos - realPointLight;
+		float3 ray = input.worldPosition - pointLight[i];
 		float rayLength = length(ray);
 		float3 realRay = -normalize(float3(ray.x, ray.y, ray.z));
 
@@ -45,10 +40,10 @@ float4 main(Input input) : SV_TARGET
 		float constantAttenuation = pointLightParams[i].z;
 		float attenuation = quadraticAttenuation * pow(rayLength, 2) + linearAttenuation * rayLength + constantAttenuation;
 
-		brightness = saturate(dot(realNormal, realRay) / attenuation + ambientLight);
-		colour += brightness * diffuseColour * realPointLightColour;
+		brightness = dot(realNormal, realRay) / attenuation + ambientLight;
+		colour += brightness * diffuseColour * pointLightColour[i] * pointLightColour[i].w;
 	}
 
 
-	return float4(saturate(colour), 1.0f);
+	return saturate(colour);
 }

@@ -8,7 +8,7 @@ namespace jeffNamespace
 	{
 	public:
 		// RGB + intensity
-		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 
 		static DirectX::XMFLOAT4 threeToFour(DirectX::XMFLOAT3 in)
 		{

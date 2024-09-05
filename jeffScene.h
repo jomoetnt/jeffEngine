@@ -7,18 +7,17 @@ namespace jeffNamespace
 	class jeffScene
 	{
 	public:
-		graphicsStruct jGrafStruct;
-
 		jeffObject rootNode;
 		jeffCamera* jActiveCam = nullptr;
 		std::array<jeffLightPoint*, 4> jPointLights;
 		jeffLightDirectional* jDirLight;
 		std::vector<jeffModel*> jModels;
 
-		jeffScene(graphicsStruct jefStruct)
-		{
-			jGrafStruct = jefStruct;
+		ID3D11Device* jDev = nullptr;
+		ID3D11DeviceContext* jContext = nullptr;
 
+		jeffScene(ID3D11Device* dev, ID3D11DeviceContext* context) : jDev(dev), jContext(context)
+		{
 			initObjects();
 		}
 
@@ -26,18 +25,16 @@ namespace jeffNamespace
 		{
 			delete jActiveCam;
 			delete jDirLight;
-			for (jeffModel* mod : jModels)
-				delete mod;
-			for (jeffLightPoint* light : jPointLights)
-				delete light;
+			for (jeffModel* mod : jModels) delete mod;
+			for (jeffLightPoint* light : jPointLights) delete light;
 		}
 
 		void initObjects()
 		{
-			jeffModel* jModel = new jeffModel("cube.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", jGrafStruct);
+			jeffModel* jModel = new jeffModel("cube.obj", jDev, jContext);
 			jModel->transformPosition.x += 2.0f;
 
-			jeffModel* jModel2 = new jeffModel("sphere.obj", L"jeffVertexShader.hlsl", L"jeffPixelShader.hlsl", jGrafStruct);
+			jeffModel* jModel2 = new jeffModel("sphere.obj", jDev, jContext);
 			jModels.emplace_back(jModel); jModels.emplace_back(jModel2);
 			rootNode.addChild((jeffObject*)jModel); rootNode.addChild((jeffObject*)jModel2);
 
@@ -67,8 +64,7 @@ namespace jeffNamespace
 
 		void draw()
 		{
-			for (jeffModel* mod : jModels)
-				mod->draw(jPointLights, jDirLight, jActiveCam);
+			for (jeffModel* mod : jModels) mod->draw(jPointLights, jDirLight, jActiveCam);
 		}
 
 	};

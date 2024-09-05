@@ -2,34 +2,30 @@
 
 using namespace jeffNamespace;
 
-
-jeffManager::jeffManager(HWND hWnd)
+void jeffManager::makeInstance()
 {
-	GetClientRect(hWnd, &screenSize);
-	width = screenSize.right - screenSize.left;
-	height = screenSize.bottom - screenSize.top;
-	jefGraf = new jGraphics(hWnd, width, height);
+	instance = new jeffManager();
 
-	graphicsStruct modelStruct(jefGraf->jDev, jefGraf->jContext, width, height);
-	jScene = new jeffScene(modelStruct);
+	instance->jScene = new jeffScene(jGraphics::getInstance()->jDev, jGraphics::getInstance()->jContext);
 
-	jefSound = new jeffAudio();
-	jefSound->loadSound(L"testSound.wav");
+	instance->jefSound = new jeffAudio();
+	instance->jefSound->loadSound(L"testSound.wav");
 }
 
 int jeffManager::doFrame()
 {
-	jefGraf->beginFrame();
+	jGraphics::getInstance()->beginFrame();
 	jScene->draw();
 
-	jefGraf->draw2D();
+	jGraphics::getInstance()->draw2D();
 
-	jefGraf->endFrame();
+	jGraphics::getInstance()->endFrame();
 	return quit;
 }
 
 void jeffManager::doPhysicsTick(float delta)
 {
+	if (jScene == nullptr) return;
 	jScene->doPhysicsTick(delta);
 }
 

@@ -16,16 +16,6 @@ namespace jeffNamespace
 	class jeffManager
 	{
 	public:
-
-		jeffManager() {}
-		jeffManager(HWND hWnd);
-
-		~jeffManager()
-		{
-			delete jefGraf;
-			delete jScene;
-		}
-
 		void handleKeyEvent(char keycode);
 
 		int doFrame();
@@ -33,18 +23,27 @@ namespace jeffNamespace
 
 		void playSound(LPCWSTR filename);
 
+		static void makeInstance();
+		static jeffManager* getInstance() { return instance; }
+		static void destroyInstance() { delete instance; }
+
 	private:
-		jGraphics* jefGraf = nullptr;
+		jeffManager() = default;
+
+		~jeffManager()
+		{
+			delete jScene;
+			delete jefSound;
+		}
+
+	    static inline jeffManager* instance;
+
+		jeffScene* jScene = nullptr;
 		jeffAudio* jefSound = nullptr;
 		jeffInput jefInput;
 
-		jeffScene* jScene = nullptr;
-
 		float refreshTimer = 0.0f;
 		int quit = 0;
-
-		RECT screenSize{};
-		int width = 0; int height = 0;
 
 	};
 }

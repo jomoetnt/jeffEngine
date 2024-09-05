@@ -3,10 +3,8 @@
 
 using namespace jeffNamespace;
 
-jeffModel::jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR pShaderFilename, graphicsStruct graf)
+jeffModel::jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceContext* context) : jDev(dev), jContext(context)
 {
-	jDev = graf.jDev; jContext = graf.jContext; width = graf.width; height = graf.height;
-
 	mesh.loadFromObj(meshFilename);
 
 	createVBuf();
@@ -74,22 +72,22 @@ void jeffModel::draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional
 	jPConstBufStruct.dirLight = jeffLight::threeToFour(dirLight->transformRotation);
 	jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(dirLight->lightColour);
 
-	setVBuf();
-	setIBuf();
+	setVBuf(jVertBuf);
+	setIBuf(jIndexBuf);
 	setConstantBuffer(time, camera);
 	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
 }
 
-void jeffModel::setVBuf()
+void jeffModel::setVBuf(ID3D11Buffer* &buf)
 {
 	constexpr UINT stride = sizeof(jeffMesh::jeffVertex);
 	UINT offset = 0;
-	jContext->IASetVertexBuffers(0, 1, &jVertBuf, &stride, &offset);
+	jContext->IASetVertexBuffers(0, 1, &buf, &stride, &offset);
 }
 
-void jeffModel::setIBuf()
+void jeffModel::setIBuf(ID3D11Buffer* &buf)
 {
-	jContext->IASetIndexBuffer(jIndexBuf, DXGI_FORMAT_R32_UINT, 0);
+	jContext->IASetIndexBuffer(buf, DXGI_FORMAT_R32_UINT, 0);
 }
 
 void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
@@ -152,7 +150,7 @@ void jeffModel::tick(float delta)
 
 	transformRotation.x += delta;
 	transformRotation.z += delta * 0.5f;
-	//transformScale.x = sinf(time) + 1;
-	//transformScale.y = sinf(time + 1) + 1;
-	//transformScale.z = sinf(time + 2) + 1;
+	transformScale.x = 0.5 * (sinf(time) + 1);
+	transformScale.y = 0.5 * (sinf(time + 1) + 1);
+	transformScale.z = 0.5 * (sinf(time + 2) + 1);
 }

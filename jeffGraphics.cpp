@@ -8,11 +8,15 @@ using namespace jeffNamespace;
 // Initialization
 //--------------------------------------------------------
 
-jGraphics::jGraphics(HWND handle, int width, int height)
+void jGraphics::makeInstance(HWND handle)
 {
-	hwnd = handle;
-	screenWidth = width; screenHeight = height;
-	initDevice();
+	instance = new jGraphics();
+
+	instance->hwnd = handle;
+	GetClientRect(instance->hwnd, &instance->screenSize);
+	instance->screenWidth = instance->screenSize.right - instance->screenSize.left;
+	instance->screenHeight = instance->screenSize.bottom - instance->screenSize.top;
+	instance->initDevice();
 }
 
 jGraphics::~jGraphics()

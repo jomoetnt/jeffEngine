@@ -23,26 +23,27 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 using namespace jeffNamespace;
 
-jeffManager* jMan;
+std::thread jThread;
 int quit = 0;
 
 static void timer_start(std::function<void(void)> func, unsigned int interval)
 {
-    std::thread([func, interval]()
+    jThread = std::thread([func, interval]()
     {
-        while (true)
+        while (quit == 0)
         {
             auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
             func();
             std::this_thread::sleep_until(x);
         }
-    }).detach();
+    });
+    jThread.detach();
 }
 
 static void runPhysics()
 {
-    jMan->doPhysicsTick((float)(PHYSICS_FRAMETIME / 1000.0f));
-    jMan->doFrame();
+    jeffManager::getInstance()->doPhysicsTick((float)(PHYSICS_FRAMETIME / 1000.0f));
+    jeffManager::getInstance()->doFrame();
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -81,8 +82,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
     }
-
-    delete jMan;
 
     return (int) msg.wParam;
 }
@@ -125,7 +124,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
-    jMan = new jeffManager(hWnd);
+    jGraphics::makeInstance(hWnd);
+    jeffManager::makeInstance();
+
     timer_start(runPhysics, PHYSICS_FRAMETIME);
 
     return TRUE;
@@ -137,11 +138,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_DESTROY:
-        PostQuitMessage(0);
         quit = 1;
+        jeffManager::destroyInstance();
+        jGraphics::destroyInstance();
+        PostQuitMessage(0);
         break;
     case WM_KEYDOWN:
-        jMan->handleKeyEvent((char)wParam);
+        jeffManager::getInstance()->handleKeyEvent((char)wParam);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

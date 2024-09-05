@@ -12,8 +12,7 @@ namespace jeffNamespace
 	class jGraphics
 	{
 	public:
-		jGraphics(HWND handle, int width, int height);
-		~jGraphics();
+		HWND hwnd;
 
 		int frameRate = 0;
 		int screenWidth = 0; int screenHeight = 0;
@@ -26,7 +25,13 @@ namespace jeffNamespace
 		void beginFrame();
 		void endFrame();
 
+		static void makeInstance(HWND handle);
+		static jGraphics* getInstance() { return instance; }
+		static void destroyInstance() { delete instance; }
+
 	private:
+		static inline jGraphics* instance;
+
 		D3D11_INPUT_ELEMENT_DESC jLayoutDescs[3] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -34,7 +39,7 @@ namespace jeffNamespace
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
-		HWND hwnd;
+		RECT screenSize{};
 
 		IDXGISwapChain* jSwap;
 		IDXGISurface* jSurface;
@@ -60,6 +65,8 @@ namespace jeffNamespace
 		IDWriteTextFormat* jTextFormat;
 
 
+		jGraphics() = default;
+		~jGraphics();
 		// Shared
 		void initDevice();
 		void init2D();

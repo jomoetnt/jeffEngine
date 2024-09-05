@@ -10,25 +10,6 @@
 
 namespace jeffNamespace
 {
-	struct graphicsStruct
-	{
-		ID3D11Device* jDev;
-		ID3D11DeviceContext* jContext;
-		int width; int height;
-
-		graphicsStruct(ID3D11Device* jDevice, ID3D11DeviceContext* jCont, int sWidth, int sHeight)
-		{
-			jDev = jDevice; jContext = jCont; width = sWidth; height = sHeight;
-		}
-
-		graphicsStruct()
-		{
-			jDev = nullptr;
-			jContext = nullptr;
-			width = 0; height = 0;
-		}
-	};
-
 	class jeffModel : public jeffObject
 	{
 	public:
@@ -52,29 +33,25 @@ namespace jeffNamespace
 
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
+
 		ID3D11Buffer* jVConstBuf = nullptr;
 		ID3D11Buffer* jPConstBuf = nullptr;
 		ID3D11Texture2D* jDiffuseTexture = nullptr;
 		ID3D11ShaderResourceView* jSRView = nullptr;
 		ID3D11SamplerState* jSamState = nullptr;
-
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
-
-		int width = 0; int height = 0;
 
 		void createVBuf();
 		void createIBuf();
 		void initTexture();
 
-
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
-		void setVBuf();
-		void setIBuf();
+		void setVBuf(ID3D11Buffer* &buf);
+		void setIBuf(ID3D11Buffer*& buf);
 		void setConstantBuffer(float time, jeffCamera* camera);
 
-
-		jeffModel(const char* meshFilename, LPCWSTR vShaderFilename, LPCWSTR pShaderFilename, graphicsStruct graf);
+		jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceContext* context);
 
 		~jeffModel()
 		{

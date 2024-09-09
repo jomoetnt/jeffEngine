@@ -33,7 +33,7 @@ jGraphics::~jGraphics()
 	jDepthStencil->Release();
 	jDSV->Release();
 	jLayout->Release();
-	jRast->Release();
+	//jRast->Release();
 	jDepthState->Release();
 	jRTarget->Release();
 	jContext->Release();
@@ -53,8 +53,6 @@ void jGraphics::initDevice()
 	createRasterizer();
 
 	init2D();
-
-	jContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void jGraphics::makeSwapchain()
@@ -180,13 +178,13 @@ void jGraphics::createRasterizer()
 	jRect.top = 0;
 	jRect.bottom = screenHeight;
 
-	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
-	if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
+	//D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
+	//HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
+	//if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
 
 	jContext->RSSetViewports(1, &jViewport);
 	jContext->RSSetScissorRects(1, &jRect);
-	jContext->RSSetState(jRast);
+	//jContext->RSSetState(jRast);
 }
 
 void jGraphics::init2D()
@@ -214,7 +212,7 @@ void jGraphics::init2D()
 	hr = jWriteFactory->CreateTextFormat(L"Arial",
 		NULL,
 		DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
-		36.0f,
+		18.0f,
 		L"en-us",
 		&jTextFormat);
 	if (FAILED(hr)) throw std::runtime_error("error creating text format");
@@ -229,13 +227,29 @@ void jGraphics::init2D()
 // Drawing
 //--------------------------------------------------------
 
-void jGraphics::draw2D()
+void jGraphics::draw2D(DirectX::XMFLOAT3 dir, DirectX::XMFLOAT3 start)
 {
 	jRT->BeginDraw();
 
-	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(120), static_cast<FLOAT>(50));
-	std::wstring frameHz = std::to_wstring(frameRate);
+	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(140), static_cast<FLOAT>(50));
+	std::wstring frameHz = std::to_wstring(dir.x);
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
+	D2D1_RECT_F layoutRect2 = D2D1::RectF(static_cast<FLOAT>(140), static_cast<FLOAT>(0), static_cast<FLOAT>(280), static_cast<FLOAT>(50));
+	std::wstring frameHz2 = std::to_wstring(dir.y);
+	jRT->DrawText(frameHz2.c_str(), (UINT32)frameHz2.size(), jTextFormat, layoutRect2, jBrush);
+	D2D1_RECT_F layoutRect3 = D2D1::RectF(static_cast<FLOAT>(280), static_cast<FLOAT>(0), static_cast<FLOAT>(420), static_cast<FLOAT>(50));
+	std::wstring frameHz3 = std::to_wstring(dir.z);
+	jRT->DrawText(frameHz3.c_str(), (UINT32)frameHz3.size(), jTextFormat, layoutRect3, jBrush);
+
+	D2D1_RECT_F layoutRect4 = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(50), static_cast<FLOAT>(140), static_cast<FLOAT>(100));
+	std::wstring frameHz4 = std::to_wstring(start.x);
+	jRT->DrawText(frameHz4.c_str(), (UINT32)frameHz4.size(), jTextFormat, layoutRect4, jBrush);
+	D2D1_RECT_F layoutRect5 = D2D1::RectF(static_cast<FLOAT>(140), static_cast<FLOAT>(50), static_cast<FLOAT>(280), static_cast<FLOAT>(100));
+	std::wstring frameHz5 = std::to_wstring(start.y);
+	jRT->DrawText(frameHz5.c_str(), (UINT32)frameHz5.size(), jTextFormat, layoutRect5, jBrush);
+	D2D1_RECT_F layoutRect6 = D2D1::RectF(static_cast<FLOAT>(280), static_cast<FLOAT>(50), static_cast<FLOAT>(420), static_cast<FLOAT>(100));
+	std::wstring frameHz6 = std::to_wstring(start.z);
+	jRT->DrawText(frameHz6.c_str(), (UINT32)frameHz6.size(), jTextFormat, layoutRect6, jBrush);
 
 	HRESULT hr = jRT->EndDraw();
 	if (FAILED(hr)) throw std::runtime_error("error ending 2d draw");

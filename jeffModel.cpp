@@ -7,6 +7,7 @@ jeffModel::jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceCo
 {
 	mesh.loadFromObj(meshFilename);
 
+	createRast();
 	createVBuf();
 	createIBuf();
 	initTexture();
@@ -75,6 +76,11 @@ void jeffModel::draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional
 	setVBuf(jVertBuf);
 	setIBuf(jIndexBuf);
 	setConstantBuffer(time, camera);
+	jContext->RSSetState(jRast);
+	if (wireframe)
+		jContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	else
+		jContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
 }
 
@@ -97,8 +103,8 @@ void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 	DirectX::XMMATRIX cam = camera->getTransformMat();
 	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(cam);
 	jVConstBufStruct.cameraMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, cam));
-
 	jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(camera->projectionMatrix);
+	jPConstBufStruct.wireframe = wireframe ? DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f):DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	D3D11_BUFFER_DESC jVDesc{};
 	jVDesc.ByteWidth = sizeof(jVConstBufStruct);
@@ -136,21 +142,4 @@ void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 
 	jContext->PSSetShaderResources(0, 1, &jSRView);
 	jContext->PSSetSamplers(0, 1, &jSamState);
-}
-
-void jeffModel::initObject()
-{
-	transformPosition.z += 5.0f;
-	jeffObject::initObject();
-}
-
-void jeffModel::tick(float delta)
-{
-	jeffObject::tick(delta);
-
-	transformRotation.x += delta;
-	transformRotation.z += delta * 0.5f;
-	transformScale.x = 0.5 * (sinf(time) + 1);
-	transformScale.y = 0.5 * (sinf(time + 1) + 1);
-	transformScale.z = 0.5 * (sinf(time + 2) + 1);
 }

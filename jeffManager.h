@@ -17,11 +17,10 @@ namespace jeffNamespace
 	{
 	public:
 		void handleKeyEvent(char keycode);
+		void handleMouseEvent(float x, float y);
 
 		int doFrame();
 		void doPhysicsTick(float delta);
-
-		void playSound(LPCWSTR filename);
 
 		static void makeInstance();
 		static jeffManager* getInstance() { return instance; }
@@ -33,14 +32,11 @@ namespace jeffNamespace
 		~jeffManager()
 		{
 			delete jScene;
-			delete jefSound;
 		}
 
 	    static inline jeffManager* instance;
 
 		jeffScene* jScene = nullptr;
-		jeffAudio* jefSound = nullptr;
-		jeffInput jefInput;
 
 		float refreshTimer = 0.0f;
 		int quit = 0;

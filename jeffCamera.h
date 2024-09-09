@@ -27,6 +27,8 @@ namespace jeffNamespace
 			case DOWN: transformPosition.z -= 0.1f; break;
 			case LEFT: transformPosition.x -= 0.1f; break;
 			case RIGHT: transformPosition.x += 0.1f; break;
+			case LCTRL: transformPosition.y -= 0.1f; break;
+			case SPACEBAR: transformPosition.y += 0.1f; break;
 			case Z: transformRotation.y -= 0.1f; break;
 			case X: transformRotation.y += 0.1f; break;
 			}

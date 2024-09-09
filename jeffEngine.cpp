@@ -125,6 +125,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     UpdateWindow(hWnd);
 
     jGraphics::makeInstance(hWnd);
+    jeffAudio::makeInstance();
     jeffManager::makeInstance();
 
     timer_start(runPhysics, PHYSICS_FRAMETIME);
@@ -139,12 +140,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         quit = 1;
-        jeffManager::destroyInstance();
         jGraphics::destroyInstance();
+        jeffAudio::destroyInstance();
+        jeffManager::destroyInstance();
         PostQuitMessage(0);
         break;
     case WM_KEYDOWN:
         jeffManager::getInstance()->handleKeyEvent((char)wParam);
+        break;
+    case WM_MOUSEMOVE:
+        jeffManager::getInstance()->handleMouseEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        break;
+    case WM_LBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x01);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

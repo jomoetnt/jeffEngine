@@ -72,6 +72,9 @@
     <ClInclude Include="jeffObject.h">
       <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
+    <ClInclude Include="jeffPhysicsObject.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

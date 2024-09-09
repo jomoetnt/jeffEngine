@@ -8,6 +8,16 @@
 class jeffAudio
 {
 public:
+
+	void loadSound(LPCWSTR filename);
+
+	void playSound(LPCWSTR filename);
+
+	static void makeInstance() { instance = new jeffAudio(); }
+	static jeffAudio* getInstance() { return instance; }
+	static void destroyInstance() { delete instance; }
+
+private:
 	jeffAudio()
 	{
 		HRESULT hr = XAudio2Create(&jAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
@@ -19,12 +29,8 @@ public:
 		jAudio->Release();
 	}
 
-	void loadSound(LPCWSTR filename);
+	static inline jeffAudio* instance = nullptr;
 
-	void playSound(LPCWSTR filename);
-
-
-private:
 	IXAudio2* jAudio = nullptr;
 	IXAudio2MasteringVoice* jMasterVoice = nullptr;
 	IXAudio2SourceVoice* jSourceVoice = nullptr;

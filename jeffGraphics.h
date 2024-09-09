@@ -14,13 +14,12 @@ namespace jeffNamespace
 	public:
 		HWND hwnd;
 
-		int frameRate = 0;
 		int screenWidth = 0; int screenHeight = 0;
 
 		ID3D11Device* jDev;
 		ID3D11DeviceContext* jContext;
 
-		void draw2D();
+		void draw2D(DirectX::XMFLOAT3 dir, DirectX::XMFLOAT3 start);
 
 		void beginFrame();
 		void endFrame();
@@ -46,7 +45,7 @@ namespace jeffNamespace
 
 		// D3D
 		ID3D11InputLayout* jLayout = nullptr;
-		ID3D11RasterizerState* jRast = nullptr;
+		//ID3D11RasterizerState* jRast = nullptr;
 		ID3D11RenderTargetView* jRTarget = nullptr;
 		ID3D11Texture2D* jBackBuf = nullptr;
 		ID3D11Texture2D* jDepthStencil = NULL;

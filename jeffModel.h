@@ -27,6 +27,7 @@ namespace jeffNamespace
 			DirectX::XMFLOAT4 pointLightParams[4] = { DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f) };
 			DirectX::XMFLOAT4 dirLight = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
 			DirectX::XMFLOAT4 dirLightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
+			DirectX::XMFLOAT4 wireframe = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		} jPConstBufStruct;
 
 		jeffMesh mesh;
@@ -34,6 +35,7 @@ namespace jeffNamespace
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
 
+		ID3D11RasterizerState* jRast = nullptr;
 		ID3D11Buffer* jVConstBuf = nullptr;
 		ID3D11Buffer* jPConstBuf = nullptr;
 		ID3D11Texture2D* jDiffuseTexture = nullptr;
@@ -42,8 +44,16 @@ namespace jeffNamespace
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
 
+		bool wireframe = false;
+
 		void createVBuf();
 		void createIBuf();
+		void createRast()
+		{
+			D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(wireframe ? D3D11_FILL_WIREFRAME:D3D11_FILL_SOLID, wireframe ? D3D11_CULL_NONE:D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
+			HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
+			if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
+		}
 		void initTexture();
 
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
@@ -52,6 +62,7 @@ namespace jeffNamespace
 		void setConstantBuffer(float time, jeffCamera* camera);
 
 		jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceContext* context);
+		jeffModel() = default;
 
 		~jeffModel()
 		{
@@ -64,9 +75,6 @@ namespace jeffNamespace
 			jSamState->Release();
 		}
 
-		void initObject() override;
-
-		void tick(float delta) override;
 
 	};
 }

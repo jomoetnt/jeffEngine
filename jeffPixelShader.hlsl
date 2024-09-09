@@ -5,6 +5,7 @@ cbuffer jeffPBuf : register(b1)
 	float4 pointLightParams[4];
 	float4 dirLight;
 	float4 dirLightColour;
+	float4 wireframe;
 }
 
 struct Input 
@@ -20,30 +21,37 @@ SamplerState jLinearSample : register(s0);
 
 float4 main(Input input) : SV_TARGET
 {
-	float4 diffuseColour = jDiffuse.Sample(jLinearSample, input.texcrd);
-	float4 ambientLight = float4(0.05f, 0.05f, 0.05f, 1.0f);
-
-	float4 realNormal = float4(normalize(input.n), 0.0f);
-
-	float4 realDirLight = -normalize(dirLight);
-
-	float4 brightness = dot(realNormal, realDirLight);
-	float4 colour = brightness * diffuseColour * dirLightColour * dirLightColour.w;
-	for (int i = 0; i < 4; i++)
+	if (wireframe.w != 0)
 	{
-		float3 ray = input.worldPosition - pointLight[i];
-		float rayLength = length(ray);
-		float3 realRay = -normalize(float3(ray.x, ray.y, ray.z));
-
-		float quadraticAttenuation = pointLightParams[i].x;
-		float linearAttenuation = pointLightParams[i].y;
-		float constantAttenuation = pointLightParams[i].z;
-		float attenuation = quadraticAttenuation * pow(rayLength, 2) + linearAttenuation * rayLength + constantAttenuation;
-
-		brightness = dot(realNormal, realRay) / attenuation + ambientLight;
-		colour += brightness * diffuseColour * pointLightColour[i] * pointLightColour[i].w;
+		return float4(1.0f, 1.0f, 0.0f, 1.0f);
 	}
+	else
+	{
+		float4 diffuseColour = jDiffuse.Sample(jLinearSample, input.texcrd);
+		float4 ambientLight = float4(0.05f, 0.05f, 0.05f, 1.0f);
+
+		float4 realNormal = float4(normalize(input.n), 0.0f);
+
+		float4 realDirLight = -normalize(dirLight);
+
+		float4 brightness = dot(realNormal, realDirLight);
+		float4 colour = brightness * diffuseColour * dirLightColour * dirLightColour.w;
+		for (int i = 0; i < 4; i++)
+		{
+			float3 ray = input.worldPosition - pointLight[i];
+			float rayLength = length(ray);
+			float3 realRay = -normalize(float3(ray.x, ray.y, ray.z));
+
+			float quadraticAttenuation = pointLightParams[i].x;
+			float linearAttenuation = pointLightParams[i].y;
+			float constantAttenuation = pointLightParams[i].z;
+			float attenuation = quadraticAttenuation * pow(rayLength, 2) + linearAttenuation * rayLength + constantAttenuation;
+
+			brightness = dot(realNormal, realRay) / attenuation + ambientLight;
+			colour += brightness * diffuseColour * pointLightColour[i] * pointLightColour[i].w;
+		}
 
 
-	return saturate(colour);
+		return saturate(colour);
+	}
 }

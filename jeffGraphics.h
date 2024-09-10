@@ -14,12 +14,10 @@ namespace jeffNamespace
 	public:
 		HWND hwnd;
 
-		int screenWidth = 0; int screenHeight = 0;
-
 		ID3D11Device* jDev;
 		ID3D11DeviceContext* jContext;
 
-		void draw2D(DirectX::XMFLOAT3 dir, DirectX::XMFLOAT3 start);
+		void draw2D();
 
 		void beginFrame();
 		void endFrame();
@@ -27,6 +25,8 @@ namespace jeffNamespace
 		static void makeInstance(HWND handle);
 		static jGraphics* getInstance() { return instance; }
 		static void destroyInstance() { delete instance; }
+
+		int screenWidth = 0; int screenHeight = 0;
 
 	private:
 		static inline jGraphics* instance;
@@ -37,8 +37,6 @@ namespace jeffNamespace
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
-
-		RECT screenSize{};
 
 		IDXGISwapChain* jSwap;
 		IDXGISurface* jSurface;

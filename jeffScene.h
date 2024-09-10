@@ -14,7 +14,8 @@ namespace jeffNamespace
 		jeffLightDirectional* jDirLight;
 		std::vector<jeffModel*> jModels;
 		jeffPhysicsObject* cube = nullptr;
-		jeffModel rayModel;
+
+		bool debugShapes = true;
 
 		float mouseX, mouseY;
 
@@ -56,7 +57,7 @@ namespace jeffNamespace
 			jModel2->transformPosition.z += 7.0f;
 			jModel2->transformPosition.x += 2.0f;
 
-			jeffMesh::jeffVertex vert{};
+			/*jeffMesh::jeffVertex vert{};
 			vert.position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			vert.normal = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			vert.texcoord = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -80,10 +81,14 @@ namespace jeffNamespace
 			rayModel.createIBuf();
 			rayModel.initTexture();
 			rayModel.initObject();
-			jModels.emplace_back(&rayModel);
+			jModels.emplace_back(&rayModel);*/
 
-			jModels.emplace_back(jModel); jModels.emplace_back(jModel2);
-			cube->addChild(jModel); rootNode.addChild(jModel2); rootNode.addChild(&rayModel);
+			cube->debugShape = new jeffModel("cube.obj", jDev, jContext);
+			cube->debugShape->wireframe = true;
+
+			jModels.emplace_back(jModel); jModels.emplace_back(jModel2); jModels.emplace_back(cube->debugShape);
+
+			cube->addChild(jModel); rootNode.addChild(jModel2); rootNode.addChild(cube->debugShape); //rootNode.addChild(&rayModel);
 
 			rootNode.initObject();
 		}
@@ -94,15 +99,20 @@ namespace jeffNamespace
 			{
 				DirectX::XMFLOAT3 origin = jActiveCam->transformPosition;
 				
-				float difX = (960.0f - mouseX) / 1920.0f; float difY = (540.0f - mouseY) / 1080.0f;
+				float halfWidth = jGraphics::getInstance()->screenWidth * 0.5f; float halfHeight = jGraphics::getInstance()->screenHeight * 0.5f;
+				float difX = (mouseX - halfWidth) / (halfWidth); float difY = (halfHeight - mouseY) / halfHeight;
 				//float fovX = DirectX::XM_PIDIV2;
-				//float aspect = 1920.0f / 1080.0f;
-				//float fovY = fovX / aspect;
+				float aspect = jGraphics::getInstance()->screenWidth * 1.0f / jGraphics::getInstance()->screenHeight;
+				difX *= aspect;
 
-				DirectX::XMFLOAT3 dir = DirectX::XMFLOAT3(difX, difY, 1.0f);
-				if (cube->isOverlappingRay(dir, origin))
+				DirectX::XMFLOAT4 dir = DirectX::XMFLOAT4(difX, difY, 1.0f, 0.0f);
+				DirectX::XMVECTOR dirTransformed = DirectX::XMLoadFloat4(&dir);
+				dirTransformed = DirectX::XMVector4Transform(dirTransformed, jActiveCam->getTransformMat());
+				DirectX::XMStoreFloat4(&dir, dirTransformed);
+				if (cube->isOverlappingRay(DirectX::XMFLOAT3(dir.x, dir.y, dir.z), origin))
 				{
-					cube->transformScale.x = 2.0f;
+					if (cube->transformScale.x == 1.0f) cube->transformScale.x = 2.0f;
+					else cube->transformScale.x = 1.0f;
 				}
 			}
 			rootNode.handleEvent(JEFF_KEY_EVENT, &eventKey);
@@ -122,7 +132,7 @@ namespace jeffNamespace
 
 		void draw()
 		{
-			rayModel.transformPosition = cube->testRayStart;
+			/*rayModel.transformPosition = cube->testRayStart;
 
 			DirectX::XMFLOAT3 upfloat = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
 			DirectX::XMFLOAT3 forwardfloat = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -131,7 +141,7 @@ namespace jeffNamespace
 			DirectX::XMMATRIX lookat = DirectX::XMMatrixLookAtLH(DirectX::XMVectorZero(), dir, up);
 			up = DirectX::XMLoadFloat3(&forwardfloat);
 			up = DirectX::XMVector3Transform(up, lookat);
-			DirectX::XMStoreFloat3(&rayModel.transformRotation, up);
+			DirectX::XMStoreFloat3(&rayModel.transformRotation, up);*/
 
 			for (jeffModel* mod : jModels) mod->draw(jPointLights, jDirLight, jActiveCam);
 		}

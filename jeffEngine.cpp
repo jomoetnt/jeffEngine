@@ -154,6 +154,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
         jeffManager::getInstance()->handleKeyEvent(0x01);
         break;
+    case WM_RBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x02);
+        break;
+    case WM_MBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x04);
+        break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

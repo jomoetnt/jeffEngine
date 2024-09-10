@@ -16,9 +16,7 @@ namespace jeffNamespace
 		DirectX::XMFLOAT3 velocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		// temp
-		DirectX::XMFLOAT3 testRayStart = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-		DirectX::XMFLOAT3 testRayDir = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+		jeffModel* debugShape = nullptr;
 
 		jeffPhysicsObject(DirectX::XMFLOAT3 colliderStart, DirectX::XMFLOAT3 colliderEnd)
 		{
@@ -35,60 +33,8 @@ namespace jeffNamespace
 		{
 			transformRotation.x += delta;
 			transformRotation.z += delta * 0.5f;
-			if (isOverlappingRay(testRayDir, testRayStart)) children.front()->transformPosition.y = 2.0f;
-			else children.front()->transformPosition.y = 0.0f;
-		}
 
-		void handleKeyEvent(JEFF_KEY* key) override
-		{
-			if (*key == W)
-			{
-				testRayDir.z += 0.1f;
-			}
-			if (*key == S)
-			{
-				testRayDir.z -= 0.1f;
-			}
-			if (*key == A)
-			{
-				testRayDir.y -= 0.1f;
-			}
-			if (*key == D)
-			{
-				testRayDir.y += 0.1f;
-			}
-			if (*key == Q)
-			{
-				testRayDir.x -= 0.1f;
-			}
-			if (*key == E)
-			{
-				testRayDir.x += 0.1f;
-			}
-			if (*key == I)
-			{
-				testRayStart.z += 0.1f;
-			}
-			if (*key == K)
-			{
-				testRayStart.z -= 0.1f;
-			}
-			if (*key == J)
-			{
-				testRayStart.y -= 0.1f;
-			}
-			if (*key == L)
-			{
-				testRayStart.y += 0.1f;
-			}
-			if (*key == U)
-			{
-				testRayStart.x -= 0.1f;
-			}
-			if (*key == O)
-			{
-				testRayStart.x += 0.1f;
-			}
+			debugShape->transformPosition = transformPosition;
 		}
 
 		bool isOverlapping(jeffPhysicsObject& other)

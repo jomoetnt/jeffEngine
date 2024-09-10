@@ -16,7 +16,7 @@ int jeffManager::doFrame()
 	jGraphics::getInstance()->beginFrame();
 	jScene->draw();
 
-	jGraphics::getInstance()->draw2D(jScene->cube->testRayDir, jScene->cube->testRayStart);
+	jGraphics::getInstance()->draw2D();
 
 	jGraphics::getInstance()->endFrame();
 	return quit;

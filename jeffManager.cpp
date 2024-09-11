@@ -28,7 +28,7 @@ void jeffManager::doPhysicsTick(float delta)
 	jScene->doPhysicsTick(delta);
 }
 
-void jeffManager::handleKeyEvent(char keycode)
+void jeffManager::handleKeyEvent(char keycode, bool keydown)
 {
 	JEFF_KEY eventKey = jeffInput::getInstance()->handleKeyEvent(keycode);
 	if (eventKey == UNKNOWN) return;

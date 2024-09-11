@@ -16,7 +16,7 @@ namespace jeffNamespace
 	class jeffManager
 	{
 	public:
-		void handleKeyEvent(char keycode);
+		void handleKeyEvent(char keycode, bool keydown = true);
 		void handleMouseEvent(float x, float y);
 
 		int doFrame();

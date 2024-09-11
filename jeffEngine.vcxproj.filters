@@ -16,6 +16,9 @@
     <Filter Include="Header Files\jeffObjects">
       <UniqueIdentifier>{5bdf3bac-7f75-4b98-a20d-5be3bca87e7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\jeffObjects">
+      <UniqueIdentifier>{a1fdb0d2-0d9c-47e9-b859-013e175fea4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -89,13 +92,22 @@
     <ClCompile Include="jeffMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jeffModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="jeffAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jeffInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffObject.cpp">
+      <Filter>Source Files\jeffObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffModel.cpp">
+      <Filter>Source Files\jeffObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffPhysicsObject.cpp">
+      <Filter>Source Files\jeffObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="jeffScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,40 +5,43 @@
 #include <string>
 #include <stdexcept>
 
-class jeffAudio
+namespace jeffNamespace
 {
-public:
-
-	void loadSound(LPCWSTR filename);
-
-	void playSound(LPCWSTR filename);
-
-	static void makeInstance() { instance = new jeffAudio(); }
-	static jeffAudio* getInstance() { return instance; }
-	static void destroyInstance() { delete instance; }
-
-private:
-	jeffAudio()
+	class jeffAudio
 	{
-		HRESULT hr = XAudio2Create(&jAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
-		hr = jAudio->CreateMasteringVoice(&jMasterVoice);
-	}
+	public:
 
-	~jeffAudio()
-	{
-		jAudio->Release();
-	}
+		void loadSound(LPCWSTR filename);
 
-	static inline jeffAudio* instance = nullptr;
+		void playSound(LPCWSTR filename, bool startImmediately = true);
 
-	IXAudio2* jAudio = nullptr;
-	IXAudio2MasteringVoice* jMasterVoice = nullptr;
-	IXAudio2SourceVoice* jSourceVoice = nullptr;
+		static void makeInstance() { instance = new jeffAudio(); }
+		static jeffAudio* getInstance() { return instance; }
+		static void destroyInstance() { delete instance; }
 
-	std::unordered_map<std::wstring, XAUDIO2_BUFFER> bufferMap;
+	private:
+		jeffAudio()
+		{
+			HRESULT hr = XAudio2Create(&jAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
+			hr = jAudio->CreateMasteringVoice(&jMasterVoice);
+			jMasterVoice->SetVolume(0.4f);
+		}
 
-	HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition);
+		~jeffAudio()
+		{
+			jAudio->Release();
+		}
 
-	HRESULT ReadChunkData(HANDLE hFile, void* buffer, DWORD bufSize, DWORD bufOffset);
+		static inline jeffAudio* instance = nullptr;
 
-};
+		IXAudio2* jAudio = nullptr;
+		IXAudio2MasteringVoice* jMasterVoice = nullptr;
+		IXAudio2SourceVoice* jSourceVoice = nullptr;
+
+		std::unordered_map<std::wstring, XAUDIO2_BUFFER> bufferMap;
+
+		HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition);
+		HRESULT ReadChunkData(HANDLE hFile, void* buffer, DWORD bufSize, DWORD bufOffset);
+
+	};
+}

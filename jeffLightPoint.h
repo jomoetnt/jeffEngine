@@ -12,7 +12,7 @@ namespace jeffNamespace
 
 		void initObject() override
 		{
-			lightColour.w = 0.3f;
+			lightColour.w = 1.2f;
 		}
 
 	};

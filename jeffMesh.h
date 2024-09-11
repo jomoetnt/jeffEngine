@@ -28,9 +28,7 @@ namespace jeffNamespace
 		bool smoothShading = false;
 
 		void loadFromObj(const char* filename);
-
 		void objProcessLine(std::string line, int& i);
-
 		void handleFace(std::string line, int& i);
 	};
 }

@@ -176,6 +176,9 @@
     <ClCompile Include="jeffManager.cpp" />
     <ClCompile Include="jeffMesh.cpp" />
     <ClCompile Include="jeffModel.cpp" />
+    <ClCompile Include="jeffObject.cpp" />
+    <ClCompile Include="jeffPhysicsObject.cpp" />
+    <ClCompile Include="jeffScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="jeffEngine.rc" />

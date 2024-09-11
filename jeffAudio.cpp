@@ -1,5 +1,6 @@
 #include "jeffAudio.h"
 
+using namespace jeffNamespace;
 
 void jeffAudio::loadSound(LPCWSTR filename)
 {
@@ -29,11 +30,16 @@ void jeffAudio::loadSound(LPCWSTR filename)
 	if (FAILED(hr)) throw std::runtime_error("error creating source voice");
 }
 
-void jeffAudio::playSound(LPCWSTR filename)
+void jeffAudio::playSound(LPCWSTR filename, bool startImmediately)
 {
+	if (startImmediately)
+	{
+		jSourceVoice->Stop();
+		jSourceVoice->FlushSourceBuffers();
+	}
 	HRESULT hr = jSourceVoice->SubmitSourceBuffer(&bufferMap[filename]);
 	if (FAILED(hr)) throw std::runtime_error("error submitting source buffer");
-	hr = jSourceVoice->Start(0);
+	hr = jSourceVoice->Start();
 	if (FAILED(hr)) throw std::runtime_error("error playing sound");
 }
 

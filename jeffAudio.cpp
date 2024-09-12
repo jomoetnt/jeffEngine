@@ -2,10 +2,16 @@
 
 using namespace jeffNamespace;
 
+jeffAudio::jeffAudio()
+{
+	HRESULT hr = XAudio2Create(&jAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	hr = jAudio->CreateMasteringVoice(&jMasterVoice);
+	jMasterVoice->SetVolume(0.4f);
+}
+
 void jeffAudio::loadSound(LPCWSTR filename)
 {
 	WAVEFORMATEXTENSIBLE wfx{};
-
 	HANDLE hfile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	DWORD fPtr = SetFilePointer(hfile, 0, NULL, FILE_BEGIN);
 
@@ -22,24 +28,26 @@ void jeffAudio::loadSound(LPCWSTR filename)
 	BYTE* dataBuf = new BYTE[chunkSize];
 	hr = ReadChunkData(hfile, dataBuf, chunkSize, chunkPos);
 
-	bufferMap[filename].AudioBytes = chunkSize;
-	bufferMap[filename].pAudioData = dataBuf;
-	bufferMap[filename].Flags = XAUDIO2_END_OF_STREAM;
-
-	hr = jAudio->CreateSourceVoice(&jSourceVoice, (WAVEFORMATEX*)&wfx);
+	IXAudio2SourceVoice* source = nullptr;
+	hr = jAudio->CreateSourceVoice(&source, (WAVEFORMATEX*)&wfx);
 	if (FAILED(hr)) throw std::runtime_error("error creating source voice");
+
+	jeffSound newSound{};
+	newSound.buf.AudioBytes = chunkSize; newSound.buf.pAudioData = dataBuf; newSound.buf.Flags = XAUDIO2_END_OF_STREAM;
+	newSound.sourceVoice = source;
+	soundMap[filename] = newSound;
 }
 
 void jeffAudio::playSound(LPCWSTR filename, bool startImmediately)
 {
 	if (startImmediately)
 	{
-		jSourceVoice->Stop();
-		jSourceVoice->FlushSourceBuffers();
+		soundMap[filename].sourceVoice->Stop();
+		soundMap[filename].sourceVoice->FlushSourceBuffers();
 	}
-	HRESULT hr = jSourceVoice->SubmitSourceBuffer(&bufferMap[filename]);
+	HRESULT hr = soundMap[filename].sourceVoice->SubmitSourceBuffer(&soundMap[filename].buf);
 	if (FAILED(hr)) throw std::runtime_error("error submitting source buffer");
-	hr = jSourceVoice->Start();
+	hr = soundMap[filename].sourceVoice->Start();
 	if (FAILED(hr)) throw std::runtime_error("error playing sound");
 }
 
@@ -101,7 +109,6 @@ HRESULT jeffAudio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWO
 			if (FAILED(hr)) throw std::runtime_error("error finding chunk");
 			return S_FALSE;
 		}
-
 	}
 
 	return S_OK;

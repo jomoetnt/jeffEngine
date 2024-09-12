@@ -10,12 +10,14 @@ namespace jeffNamespace
 	class jeffScene
 	{
 	public:
+		std::string sceneName;
+
 		jeffObject rootNode;
 		jeffCamera* jActiveCam = nullptr;
+		std::vector<jeffModel*> jModels;
+		// can make vectors later
 		std::array<jeffLightPoint*, 4> jPointLights;
 		jeffLightDirectional* jDirLight;
-		std::vector<jeffModel*> jModels;
-		jeffPhysicsObject* cube = nullptr;
 
 		bool debugShapes = true;
 
@@ -27,11 +29,10 @@ namespace jeffNamespace
 		jeffScene(ID3D11Device* dev, ID3D11DeviceContext* context);
 		~jeffScene();
 
-		void initObjects();
+		virtual void initObjects();
 		void doPhysicsTick(float delta);
 
-		void handleKeyEvent(JEFF_KEY& eventKey);
-		void handleMouseEvent(float x, float y);
+		void handleInputEvent(JEFF_KEY eventKey, float* location, bool keydown);
 
 		void draw();
 

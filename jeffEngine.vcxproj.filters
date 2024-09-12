@@ -19,6 +19,12 @@
     <Filter Include="Source Files\jeffObjects">
       <UniqueIdentifier>{a1fdb0d2-0d9c-47e9-b859-013e175fea4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{e680cc6a-2ce5-45a8-9271-0d2e7e45dfb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tests">
+      <UniqueIdentifier>{e9a3b75b-8b4b-49de-b81f-82d0c633b88b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -78,6 +84,12 @@
     <ClInclude Include="jeffPhysicsObject.h">
       <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
+    <ClInclude Include="testScene.h">
+      <Filter>Header Files\tests</Filter>
+    </ClInclude>
+    <ClInclude Include="testGame.h">
+      <Filter>Header Files\tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">
@@ -126,10 +138,10 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="jeffVertexShader.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="jeffPixelShader.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

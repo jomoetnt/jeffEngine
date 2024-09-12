@@ -38,9 +38,9 @@ float4 main(Input input) : SV_TARGET
 		float4 colour = brightness * diffuseColour * dirLightColour * dirLightColour.w;
 		for (int i = 0; i < 4; i++)
 		{
-			float3 ray = input.worldPosition - pointLight[i];
+			float4 ray = input.worldPosition - pointLight[i];
 			float rayLength = length(ray);
-			float3 realRay = -normalize(float3(ray.x, ray.y, ray.z));
+			float4 realRay = -normalize(ray);
 
 			float quadraticAttenuation = pointLightParams[i].x;
 			float linearAttenuation = pointLightParams[i].y;

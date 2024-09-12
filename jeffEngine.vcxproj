@@ -167,6 +167,8 @@
     <ClInclude Include="jeffScene.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="testGame.h" />
+    <ClInclude Include="testScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffAudio.cpp" />

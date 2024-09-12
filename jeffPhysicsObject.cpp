@@ -10,15 +10,43 @@ jeffPhysicsObject::jeffPhysicsObject(DirectX::XMFLOAT3 colliderStart, DirectX::X
 
 void jeffPhysicsObject::initObject()
 {
+	// temporary test
 	transformPosition.z += 7.0f;
 }
 
 void jeffPhysicsObject::tick(float delta)
 {
+	debugShape->transformPosition = transformPosition;
+	// temporary test
 	transformRotation.x += delta;
 	transformRotation.z += delta * 0.5f;
+}
 
-	debugShape->transformPosition = transformPosition;
+void jeffPhysicsObject::handleInputEvent(JEFF_KEY key, float* coords, bool keydown)
+{
+	// temporary test
+	if (!keydown) return;
+	if (key == LEFTCLICK)
+	{
+		jeffObject* cam = parent->find("jeffCam");
+		DirectX::XMFLOAT3 origin = cam->transformPosition;
+
+		float halfWidth = jGraphics::getInstance()->screenWidth * 0.5f; float halfHeight = jGraphics::getInstance()->screenHeight * 0.5f;
+		float difX = (coords[0] - halfWidth) / (halfWidth); float difY = (halfHeight - coords[1]) / halfHeight;
+		float aspect = (float)jGraphics::getInstance()->screenWidth / jGraphics::getInstance()->screenHeight;
+		difX *= aspect;
+
+		DirectX::XMFLOAT4 dir = DirectX::XMFLOAT4(difX, difY, 1.0f, 0.0f);
+		DirectX::XMVECTOR dirTransformed = DirectX::XMLoadFloat4(&dir);
+		dirTransformed = DirectX::XMVector4Transform(dirTransformed, cam->getTransformMat());
+		DirectX::XMStoreFloat4(&dir, dirTransformed);
+		if (isOverlappingRay(DirectX::XMFLOAT3(dir.x, dir.y, dir.z), origin))
+		{
+			if (transformScale.x == 1.0f) transformScale.x = 2.0f;
+			else transformScale.x = 1.0f;
+			jeffAudio::getInstance()->playSound(L"testSound.wav");
+		}
+	}
 }
 
 bool jeffPhysicsObject::isOverlapping(jeffPhysicsObject& other)

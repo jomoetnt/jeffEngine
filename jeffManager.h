@@ -22,6 +22,9 @@ namespace jeffNamespace
 		int doFrame();
 		void doPhysicsTick(float delta);
 
+		void addScene(jeffScene* newScene);
+		void changeScene(std::string scnName);
+
 		static void makeInstance();
 		static jeffManager* getInstance() { return instance; }
 		static void destroyInstance() { delete instance; }
@@ -31,12 +34,14 @@ namespace jeffNamespace
 
 		~jeffManager()
 		{
-			delete jScene;
+			for (auto& scene : jScenes)
+				delete scene;
 		}
 
 	    static inline jeffManager* instance;
 
-		jeffScene* jScene = nullptr;
+		std::vector<jeffScene*> jScenes;
+		jeffScene* jActiveScene = nullptr;
 
 		float refreshTimer = 0.0f;
 		int quit = 0;

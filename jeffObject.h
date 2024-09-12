@@ -10,12 +10,21 @@ namespace jeffNamespace
 {
 	enum JEFF_EVENT_TYPE
 	{
-		JEFF_KEY_EVENT, JEFF_MOUSE_EVENT
+		JEFF_INPUT_EVENT,
+	};
+
+	struct jeffInputEvent
+	{
+		JEFF_KEY key = UNKNOWN;
+		float* coords = nullptr;
+		bool keydown = true;
 	};
 
 	class jeffObject
 	{
 	public:
+		std::string nodeName;
+
 		jeffObject* parent = nullptr;
 		std::vector<jeffObject*> children;
 		DirectX::XMFLOAT3 transformPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -24,18 +33,15 @@ namespace jeffNamespace
 
 		float time = 0.0f;
 
+		// Object node methods
 		virtual void initObject();
-
-		virtual void handleEvent(JEFF_EVENT_TYPE eventType, void* jParams);
-		virtual void handleKeyEvent(JEFF_KEY* key) {}
-		virtual void handleMouseEvent(float* coords) {}
-
 		virtual void tick(float delta);
-
 		void addChild(jeffObject* child);
-
+		jeffObject* find(std::string name);
 		DirectX::XMMATRIX getTransformMat() const;
-
+		// Events
+		virtual void handleEvent(JEFF_EVENT_TYPE eventType, void* jParams);
+		virtual void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) {}
 
 	};
 }

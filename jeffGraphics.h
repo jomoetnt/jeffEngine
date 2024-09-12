@@ -43,7 +43,6 @@ namespace jeffNamespace
 
 		// D3D
 		ID3D11InputLayout* jLayout = nullptr;
-		//ID3D11RasterizerState* jRast = nullptr;
 		ID3D11RenderTargetView* jRTarget = nullptr;
 		ID3D11Texture2D* jBackBuf = nullptr;
 		ID3D11Texture2D* jDepthStencil = NULL;

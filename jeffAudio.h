@@ -10,9 +10,7 @@ namespace jeffNamespace
 	class jeffAudio
 	{
 	public:
-
 		void loadSound(LPCWSTR filename);
-
 		void playSound(LPCWSTR filename, bool startImmediately = true);
 
 		static void makeInstance() { instance = new jeffAudio(); }
@@ -20,13 +18,13 @@ namespace jeffNamespace
 		static void destroyInstance() { delete instance; }
 
 	private:
-		jeffAudio()
+		struct jeffSound
 		{
-			HRESULT hr = XAudio2Create(&jAudio, 0, XAUDIO2_DEFAULT_PROCESSOR);
-			hr = jAudio->CreateMasteringVoice(&jMasterVoice);
-			jMasterVoice->SetVolume(0.4f);
-		}
+			IXAudio2SourceVoice* sourceVoice;
+			XAUDIO2_BUFFER buf;
+		};
 
+		jeffAudio();
 		~jeffAudio()
 		{
 			jAudio->Release();
@@ -36,9 +34,8 @@ namespace jeffNamespace
 
 		IXAudio2* jAudio = nullptr;
 		IXAudio2MasteringVoice* jMasterVoice = nullptr;
-		IXAudio2SourceVoice* jSourceVoice = nullptr;
 
-		std::unordered_map<std::wstring, XAUDIO2_BUFFER> bufferMap;
+		std::unordered_map<std::wstring, jeffSound> soundMap;
 
 		HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition);
 		HRESULT ReadChunkData(HANDLE hFile, void* buffer, DWORD bufSize, DWORD bufOffset);

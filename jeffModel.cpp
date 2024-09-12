@@ -15,8 +15,20 @@ jeffModel::jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceCo
 	initObject();
 }
 
+jeffModel::~jeffModel()
+{
+	jVertBuf->Release();
+	jIndexBuf->Release();
+	jVConstBuf->Release();
+	jPConstBuf->Release();
+	jDiffuseTexture->Release();
+	jSRView->Release();
+	jSamState->Release();
+}
+
 void jeffModel::initTexture()
 {
+	// temporary test
 	HRESULT hr = DirectX::CreateDDSTextureFromFile(jDev, jContext, L"testimage.dds", (ID3D11Resource**)&jDiffuseTexture, &jSRView);
 	if (FAILED(hr)) throw std::runtime_error("error creating texture");
 
@@ -62,8 +74,16 @@ void jeffModel::createIBuf()
 	if (FAILED(hr)) throw std::runtime_error("error creating index buffer");
 }
 
+void jeffModel::createRast()
+{
+	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(wireframe ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, wireframe ? D3D11_CULL_NONE : D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
+	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
+	if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
+}
+
 void jeffModel::draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera)
 {
+	// four nearest point lights
 	for (int i = 0; i < 4; i++)
 	{
 		jPConstBufStruct.pointLights[i] = jeffLight::threeToFour(lights[i]->transformPosition);

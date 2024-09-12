@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "jeffEngine.h"
+#include "testGame.h"
 
 constexpr int MAX_LOADSTRING = 100;
 
@@ -25,6 +26,9 @@ using namespace jeffNamespace;
 
 std::thread jThread;
 int quit = 0;
+
+// temporary test
+testGame* game;
 
 static void timer_start(std::function<void(void)> func, unsigned int interval)
 {
@@ -127,6 +131,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     jGraphics::makeInstance(hWnd);
     jeffAudio::makeInstance();
     jeffManager::makeInstance();
+    game = new testGame();
 
     timer_start(runPhysics, PHYSICS_FRAMETIME);
 

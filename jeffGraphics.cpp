@@ -38,7 +38,6 @@ jGraphics::~jGraphics()
 	jDepthStencil->Release();
 	jDSV->Release();
 	jLayout->Release();
-	//jRast->Release();
 	jDepthState->Release();
 	jRTarget->Release();
 	jContext->Release();
@@ -183,13 +182,8 @@ void jGraphics::createRasterizer()
 	jRect.top = 0;
 	jRect.bottom = screenHeight;
 
-	//D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(D3D11_FILL_SOLID, D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-	//HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
-	//if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
-
 	jContext->RSSetViewports(1, &jViewport);
 	jContext->RSSetScissorRects(1, &jRect);
-	//jContext->RSSetState(jRast);
 }
 
 void jGraphics::init2D()
@@ -214,6 +208,7 @@ void jGraphics::init2D()
 	hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&jWriteFactory));
 	if (FAILED(hr)) throw std::runtime_error("error creating directwrite factory");
 
+	// Make more text formats available
 	hr = jWriteFactory->CreateTextFormat(L"Arial",
 		NULL,
 		DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
@@ -236,6 +231,7 @@ void jGraphics::draw2D()
 {
 	jRT->BeginDraw();
 
+	// Temporary test
 	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(140), static_cast<FLOAT>(50));
 	std::wstring frameHz = L"test";
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);

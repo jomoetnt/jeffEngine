@@ -48,12 +48,7 @@ namespace jeffNamespace
 
 		void createVBuf();
 		void createIBuf();
-		void createRast()
-		{
-			D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(wireframe ? D3D11_FILL_WIREFRAME:D3D11_FILL_SOLID, wireframe ? D3D11_CULL_NONE:D3D11_CULL_BACK, true, 0, 0, 0, false, false, false, false);
-			HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
-			if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
-		}
+		void createRast();
 		void initTexture();
 
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
@@ -63,17 +58,7 @@ namespace jeffNamespace
 
 		jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceContext* context);
 		jeffModel() = default;
-
-		~jeffModel()
-		{
-			jVertBuf->Release();
-			jIndexBuf->Release();
-			jVConstBuf->Release();
-			jPConstBuf->Release();
-			jDiffuseTexture->Release();
-			jSRView->Release();
-			jSamState->Release();
-		}
+		~jeffModel();
 
 
 	};

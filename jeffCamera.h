@@ -19,9 +19,9 @@ namespace jeffNamespace
 			setProjMat();
 		}
 
-		void handleKeyEvent(JEFF_KEY* key) override
+		void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) override
 		{
-			switch (*key)
+			switch (key)
 			{
 			case UP: transformPosition.z += 0.1f; break;
 			case DOWN: transformPosition.z -= 0.1f; break;

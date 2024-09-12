@@ -2,6 +2,7 @@
 
 using namespace jeffNamespace;
 
+// Remove duplicate vertices in future
 void jeffMesh::loadFromObj(const char* filename)
 {
     std::ifstream file(filename);

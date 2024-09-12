@@ -14,11 +14,9 @@ void jeffObject::handleEvent(JEFF_EVENT_TYPE eventType, void* jParams)
 {
 	switch (eventType)
 	{
-	case JEFF_KEY_EVENT:
-		handleKeyEvent((JEFF_KEY*)jParams);
-		break;
-	case JEFF_MOUSE_EVENT:
-		handleMouseEvent((float*)jParams);
+	case JEFF_INPUT_EVENT:
+		jeffInputEvent* jeffEvent = (jeffInputEvent*)jParams;
+		handleInputEvent(jeffEvent->key, jeffEvent->coords, jeffEvent->keydown);
 		break;
 	}
 
@@ -37,6 +35,23 @@ void jeffObject::tick(float delta)
 	}
 }
 
+void jeffObject::addChild(jeffObject* child)
+{
+	child->parent = this;
+	child->initObject();
+	children.emplace_back(child);
+}
+
+jeffObject* jeffObject::find(std::string name)
+{
+	if (name.compare(nodeName) == 0) return this;
+	for (auto& child : children)
+	{
+		if (child->nodeName.compare(name) == 0) return child;
+		else child->find(name);
+	}
+}
+
 DirectX::XMMATRIX jeffObject::getTransformMat() const
 {
 	DirectX::XMVECTOR rot = DirectX::XMLoadFloat3(&transformRotation);
@@ -47,10 +62,4 @@ DirectX::XMMATRIX jeffObject::getTransformMat() const
 		return childTransform;
 
 	return childTransform * parent->getTransformMat();
-}
-
-void jeffObject::addChild(jeffObject* child)
-{
-	child->parent = this;
-	children.emplace_back(child);
 }

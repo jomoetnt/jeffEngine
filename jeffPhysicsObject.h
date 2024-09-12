@@ -2,6 +2,8 @@
 
 #include "jeffObject.h"
 #include "jeffModel.h"
+#include "jeffGraphics.h"
+#include "jeffAudio.h"
 
 namespace jeffNamespace
 {
@@ -23,6 +25,8 @@ namespace jeffNamespace
 
 		void initObject() override;
 		void tick(float delta) override;
+		// temporary test
+		void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) override;
 
 		bool isOverlapping(jeffPhysicsObject& other);
 		bool isOverlappingRay(DirectX::XMFLOAT3 dir, DirectX::XMFLOAT3 start);

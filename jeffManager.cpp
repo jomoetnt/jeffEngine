@@ -5,17 +5,15 @@ using namespace jeffNamespace;
 void jeffManager::makeInstance()
 {
 	instance = new jeffManager();
-
-	instance->jScene = new jeffScene(jGraphics::getInstance()->jDev, jGraphics::getInstance()->jContext);
-
-	jeffAudio::getInstance()->loadSound(L"testSound.wav");
 }
 
 int jeffManager::doFrame()
 {
 	jGraphics::getInstance()->beginFrame();
-	jScene->draw();
+	if (jActiveScene != nullptr)
+		jActiveScene->draw();
 
+	// make 2d nodes to replace
 	jGraphics::getInstance()->draw2D();
 
 	jGraphics::getInstance()->endFrame();
@@ -24,8 +22,23 @@ int jeffManager::doFrame()
 
 void jeffManager::doPhysicsTick(float delta)
 {
-	if (jScene == nullptr) return;
-	jScene->doPhysicsTick(delta);
+	if (jActiveScene == nullptr) return;
+	jActiveScene->doPhysicsTick(delta);
+}
+
+void jeffManager::addScene(jeffScene* newScene)
+{
+	newScene->initObjects();
+	jScenes.emplace_back(newScene);
+}
+
+void jeffManager::changeScene(std::string scnName)
+{
+	for (auto& scn : jScenes)
+	{
+		if (scn->sceneName.compare(scnName) == 0)
+			jActiveScene = scn;
+	}
 }
 
 void jeffManager::handleKeyEvent(char keycode, bool keydown)
@@ -33,10 +46,13 @@ void jeffManager::handleKeyEvent(char keycode, bool keydown)
 	JEFF_KEY eventKey = jeffInput::getInstance()->handleKeyEvent(keycode);
 	if (eventKey == UNKNOWN) return;
 
-	jScene->handleKeyEvent(eventKey);
+	if (jActiveScene == nullptr) return;
+	float xy[2] = {jActiveScene->mouseX, jActiveScene->mouseY};
+	jActiveScene->handleInputEvent(eventKey, xy, keydown);
 }
 
 void jeffManager::handleMouseEvent(float x, float y)
 {
-	jScene->handleMouseEvent(x, y);
+	if (jActiveScene == nullptr) return;
+	jActiveScene->mouseX = x; jActiveScene->mouseY = y;
 }

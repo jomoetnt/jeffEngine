@@ -45,7 +45,7 @@
     <ClInclude Include="jeffMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jeffHelper.h">
+    <ClInclude Include="jeffJSON.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jeffInput.h">

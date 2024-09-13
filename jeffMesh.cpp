@@ -59,7 +59,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
         if (secondChar == ' ')
         {
             line = line.erase(0, 2);
-            std::vector<std::string> components = jeffHelper::split(line, " ");
+            std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT3 vpos = DirectX::XMFLOAT3(std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
             vpositions.emplace_back(vpos);
@@ -69,7 +69,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
         if (secondChar == 'n')
         {
             line = line.erase(0, 3);
-            std::vector<std::string> components = jeffHelper::split(line, " ");
+            std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT3 vnorm = DirectX::XMFLOAT3(std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
             vnormals.emplace_back(vnorm);
@@ -79,7 +79,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
         if (secondChar == 't')
         {
             line = line.erase(0, 3);
-            std::vector<std::string> components = jeffHelper::split(line, " ");
+            std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components[0]), std::stof(components[1]));
             vtexcoords.emplace_back(vtex);
@@ -99,11 +99,11 @@ void jeffMesh::handleFace(std::string line, int& i)
 {
     // Split up slashes and spaces - obj format is (for example) 5/1/1 3/2/5 4/3/2
     line = line.erase(0, 2);
-    std::vector<std::string> components = jeffHelper::split(line, " ");
+    std::vector<std::string> components = jeffJSON::split(line, " ");
 
-    std::vector<std::string> indices1 = jeffHelper::split(components[0], "/");
-    std::vector<std::string> indices2 = jeffHelper::split(components[1], "/");
-    std::vector<std::string> indices3 = jeffHelper::split(components[2], "/");
+    std::vector<std::string> indices1 = jeffJSON::split(components[0], "/");
+    std::vector<std::string> indices2 = jeffJSON::split(components[1], "/");
+    std::vector<std::string> indices3 = jeffJSON::split(components[2], "/");
 
     jeffVertex vert1{};
     jeffVertex vert2{};

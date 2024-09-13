@@ -151,7 +151,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="jeffAudio.h" />
     <ClInclude Include="jeffCamera.h" />
-    <ClInclude Include="jeffHelper.h" />
+    <ClInclude Include="jeffJSON.h" />
     <ClInclude Include="jeffInput.h" />
     <ClInclude Include="jeffLight.h" />
     <ClInclude Include="jeffLightDirectional.h" />

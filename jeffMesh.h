@@ -1,9 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "jeffHelper.h"
-#include <fstream>
-#include <iostream>
+#include "jeffJSON.h"
 
 namespace jeffNamespace
 {

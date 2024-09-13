@@ -5,21 +5,31 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <stack>
+#include <optional>
+#include <sstream>
 
 class jeffJSON
 {
 public:
-    union JSONValue
+    union JSONObject
     {
-        int jeffInt;
-        float jeffFloat;
-        bool jeffBool;
-        std::string jeffString;
-        std::vector<JSONValue> jeffArray;
-        std::unique_ptr<JSONValue> jeffObject;
+        union JSONValue
+        {
+            int jeffInt;
+            float jeffFloat;
+            bool jeffBool;
+            std::string jeffString;
+            std::vector<JSONObject> jeffArray;
+            std::unique_ptr<JSONObject> jeffObject;
+            JSONValue() = default;
+        };
+        JSONValue val;
+        std::unordered_map<std::string, std::optional<JSONValue>> dictionary;
+        ~JSONObject() = default;
     };
 
-    static std::vector<std::string> split(std::string s, std::string delimiter) 
+    static std::vector<std::string> split(std::string s, std::string delimiter)
     {
         size_t pos_start = 0, pos_end, delim_len = delimiter.length();
         std::string token;
@@ -36,32 +46,64 @@ public:
         return res;
     }
 
-    static std::unordered_map<std::string, std::string> readJSON(const char* filename)
+    static std::string replace(std::string s, std::string delimiter)
     {
-        std::unordered_map<std::string, std::string> dictionary;
+        std::string output = s;
+
+        size_t pos = 0;
+        while (pos != -1)
+        {
+            pos = s.find(delimiter);
+            output.erase(pos, delimiter.length());
+        }
+        return output;
+    }
+
+    static std::unordered_map<std::string, JSONObject> readJSON(const char* filename)
+    {
+        std::unordered_map<std::string, JSONObject> dictionary;
 
         std::ifstream file(filename);
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        file.close();
 
-        std::string line;
-        if (file.is_open())
+        JSONObject rootObject = parseObject(buffer.str());
+    }
+
+    static JSONObject parseObject(std::string unparsed)
+    {
+        while (line.front() == '\t' || line.front() == ' ')
+            line.erase(0);
+        if (line.front() == '{')
         {
-
-            while (std::getline(file, line))
-            {
-                while (line.front() == '\t' || line.front == ' ')
-                    line.erase(0);
-                if (line.front() == '{')
-                {
-
-                }
-            }
-            file.close();
+            continue;
+        }
+        else if (line.front() == '}')
+        {
+            objects.pop();
         }
         else
         {
-            throw std::runtime_error("could not open JSON");
+            line = replace(line, " ");
+            std::vector<std::string> halves = split(line, ":");
+            std::string strippedName = replace(halves[0], "\"");
+
+            JSONObject newObj;
+            if (halves[1].front() == '{')
+            {
+                newObj.name = strippedName;
+                objects.push(newObj);
+            }
+            else
+            {
+                if (halves[1].compare("true") == 0)
+                {
+                    newObj.val->jeffBool = true;
+                }
+                dictionary[strippedName] = newObj;
+            }
         }
     }
 
-    static 
 };

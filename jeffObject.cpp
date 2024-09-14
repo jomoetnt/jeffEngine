@@ -2,6 +2,11 @@
 
 using namespace jeffNamespace;
 
+jeffObject::jeffObject(const char* name) : nodeName(name)
+{
+
+}
+
 void jeffObject::initObject()
 {
 	for (auto& child : children)

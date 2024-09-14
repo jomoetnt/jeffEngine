@@ -14,7 +14,7 @@ namespace jeffNamespace
 
 		DirectX::XMMATRIX projectionMatrix;
 
-		jeffCamera()
+		jeffCamera(const char* camName) : jeffObject::jeffObject(camName)
 		{
 			setProjMat();
 		}

@@ -26,10 +26,10 @@ void jeffManager::doPhysicsTick(float delta)
 	jActiveScene->doPhysicsTick(delta);
 }
 
-void jeffManager::addScene(jeffScene* newScene)
+void jeffManager::addScene(jeffScene* newScene, bool change)
 {
-	newScene->initObjects();
 	jScenes.emplace_back(newScene);
+	jActiveScene = newScene;
 }
 
 void jeffManager::changeScene(std::string scnName)

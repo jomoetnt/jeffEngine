@@ -22,7 +22,7 @@ namespace jeffNamespace
 		int doFrame();
 		void doPhysicsTick(float delta);
 
-		void addScene(jeffScene* newScene);
+		void addScene(jeffScene* newScene, bool change = true);
 		void changeScene(std::string scnName);
 
 		static void makeInstance();

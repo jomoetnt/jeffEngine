@@ -81,7 +81,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             line = line.erase(0, 3);
             std::vector<std::string> components = jeffJSON::split(line, " ");
 
-            DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components[0]), std::stof(components[1]));
+            DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components[0]), 1.0f - std::stof(components[1]));
             vtexcoords.emplace_back(vtex);
             return;
         }
@@ -90,7 +90,29 @@ void jeffMesh::objProcessLine(std::string line, int& i)
     // Add face
     if (firstChar == 'f')
     {
+        meshTopology = TRIANGLE;
         handleFace(line, i);
+        return;
+    }
+
+    // Add line
+    if (firstChar == 'l')
+    {
+        meshTopology = LINE;
+
+        line = line.erase(0, 2);
+        std::vector<std::string> indices1 = jeffJSON::split(line, " ");
+        int vindex1 = std::stoi(indices1[0]) - 1;
+        int vindex2 = std::stoi(indices1[1]) - 1;
+
+        jeffVertex vert1{};
+        jeffVertex vert2{};
+
+        vert1.position = vpositions[vindex1];
+        vert2.position = vpositions[vindex2];
+        vertices.emplace_back(vert1); vertices.emplace_back(vert2);
+
+        indices.emplace_back(i++); indices.emplace_back(i++);
         return;
     }
 }
@@ -159,16 +181,7 @@ void jeffMesh::handleFace(std::string line, int& i)
     DirectX::XMFLOAT3 agreement;
     DirectX::XMStoreFloat3(&agreement, alignment);
 
-    if (agreement.x < 0.0f)
-    {
-        indices.emplace_back(i++);
-        indices.emplace_back(i++);
-        indices.emplace_back(i++);
-    }
-    else
-    {
-        indices.emplace_back(i++);
-        indices.emplace_back(++i);
-        indices.emplace_back(i++ - 1);
-    }
+    indices.emplace_back(i++);
+    indices.emplace_back(i++);
+    indices.emplace_back(i++);
 }

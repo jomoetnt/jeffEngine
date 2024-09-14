@@ -21,7 +21,7 @@ namespace jeffNamespace
 
 		jeffModel* debugShape = nullptr;
 
-		jeffPhysicsObject(DirectX::XMFLOAT3 colliderStart, DirectX::XMFLOAT3 colliderEnd);
+		jeffPhysicsObject(const char* objName, DirectX::XMFLOAT3 colliderStart, DirectX::XMFLOAT3 colliderEnd);
 
 		void initObject() override;
 		void tick(float delta) override;

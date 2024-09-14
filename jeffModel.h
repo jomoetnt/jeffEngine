@@ -56,7 +56,7 @@ namespace jeffNamespace
 		void setIBuf(ID3D11Buffer*& buf);
 		void setConstantBuffer(float time, jeffCamera* camera);
 
-		jeffModel(const char* meshFilename, ID3D11Device* dev, ID3D11DeviceContext* context);
+		jeffModel(const char* modelName, const char* meshFilename);
 		jeffModel() = default;
 		~jeffModel();
 

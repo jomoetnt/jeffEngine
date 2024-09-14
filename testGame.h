@@ -20,9 +20,8 @@ namespace jeffNamespace
 
 		void startGame()
 		{
-			scene = new testScene(jGraphics::getInstance()->jDev, jGraphics::getInstance()->jContext);
+			scene = new testScene();
 			jeffManager::getInstance()->addScene(scene);
-			jeffManager::getInstance()->changeScene("jeffTestScene");
 		}
 	};
 }

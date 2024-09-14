@@ -2,10 +2,13 @@
 
 using namespace jeffNamespace;
 
-jeffPhysicsObject::jeffPhysicsObject(DirectX::XMFLOAT3 colliderStart, DirectX::XMFLOAT3 colliderEnd)
+jeffPhysicsObject::jeffPhysicsObject(const char* objName, DirectX::XMFLOAT3 colliderStart, DirectX::XMFLOAT3 colliderEnd) : jeffObject::jeffObject(objName)
 {
 	boundingBox.start = colliderStart;
 	boundingBox.end = colliderEnd;
+
+	debugShape = new jeffModel("boxCollider", "models/box.obj");
+	debugShape->wireframe = true;
 }
 
 void jeffPhysicsObject::initObject()

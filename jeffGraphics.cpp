@@ -4,8 +4,6 @@
 
 using namespace jeffNamespace;
 
-//int screenWidth = 0; int screenHeight = 0;
-
 //--------------------------------------------------------
 // Initialization
 //--------------------------------------------------------
@@ -15,6 +13,7 @@ void jGraphics::makeInstance(HWND handle)
 	instance = new jGraphics();
 
 	instance->hwnd = handle;
+	jeffDeviceState::makeInstance();
 
 	RECT screenSize{};
 	GetClientRect(instance->hwnd, &screenSize);
@@ -40,8 +39,7 @@ jGraphics::~jGraphics()
 	jLayout->Release();
 	jDepthState->Release();
 	jRTarget->Release();
-	jContext->Release();
-	jDev->Release();
+	jeffDeviceState::getInstance()->destroyInstance();
 	jVShaderBlob->Release(); jPShaderBlob->Release();
 	jVShader->Release(); jPShader->Release();
 
@@ -77,6 +75,7 @@ void jGraphics::makeSwapchain()
 	jSDesc.Flags = 0;
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, nullptr, 0, D3D11_SDK_VERSION, &jSDesc, &jSwap, &jDev, nullptr, &jContext);
 	if (FAILED(hr)) throw std::runtime_error("error making swapchain");
+	jeffDeviceState::getInstance()->jDev = jDev; jeffDeviceState::getInstance()->jContext = jContext;
 }
 
 void jGraphics::makeRenderTarget()

@@ -8,8 +8,8 @@ cbuffer jeffVBuf : register(b0)
 struct Input 
 {
 	float3 position : POSITION;
-	float2 texcord : TEXCOORD;
 	float3 norm : NORMAL;
+	float2 texcord : TEXCOORD;
 };
 
 struct Output 

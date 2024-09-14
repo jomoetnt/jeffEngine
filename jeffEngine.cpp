@@ -154,7 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         jeffManager::getInstance()->handleKeyEvent((char)wParam);
         break;
     case WM_MOUSEMOVE:
-        jeffManager::getInstance()->handleMouseEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        jeffManager::getInstance()->handleMouseEvent((float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam));
         break;
     case WM_LBUTTONDOWN:
         jeffManager::getInstance()->handleKeyEvent(0x01);

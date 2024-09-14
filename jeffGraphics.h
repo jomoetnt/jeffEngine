@@ -14,8 +14,8 @@ namespace jeffNamespace
 	public:
 		HWND hwnd;
 
-		ID3D11Device* jDev;
-		ID3D11DeviceContext* jContext;
+		ID3D11Device* jDev = nullptr;
+		ID3D11DeviceContext* jContext = nullptr;
 
 		void draw2D();
 
@@ -34,8 +34,8 @@ namespace jeffNamespace
 		D3D11_INPUT_ELEMENT_DESC jLayoutDescs[3] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
 		IDXGISwapChain* jSwap;

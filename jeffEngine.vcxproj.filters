@@ -90,6 +90,9 @@
     <ClInclude Include="testGame.h">
       <Filter>Header Files\tests</Filter>
     </ClInclude>
+    <ClInclude Include="jeffDeviceState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

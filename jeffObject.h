@@ -32,6 +32,7 @@ namespace jeffNamespace
 		DirectX::XMFLOAT3 transformScale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 		float time = 0.0f;
+		jeffObject(const char* name);
 
 		// Object node methods
 		virtual void initObject();

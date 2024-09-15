@@ -4,6 +4,7 @@
 #include "jeffCamera.h"
 #include "jeffLightPoint.h"
 #include "jeffLightDirectional.h"
+#include "jeffMaterial.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <array>
@@ -31,16 +32,13 @@ namespace jeffNamespace
 		} jPConstBufStruct;
 
 		jeffMesh mesh;
+		jeffMaterial mat;
 
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
-
 		ID3D11RasterizerState* jRast = nullptr;
 		ID3D11Buffer* jVConstBuf = nullptr;
 		ID3D11Buffer* jPConstBuf = nullptr;
-		ID3D11Texture2D* jDiffuseTexture = nullptr;
-		ID3D11ShaderResourceView* jSRView = nullptr;
-		ID3D11SamplerState* jSamState = nullptr;
 		ID3D11Buffer* jVertBuf = nullptr;
 		ID3D11Buffer* jIndexBuf = nullptr;
 
@@ -49,7 +47,6 @@ namespace jeffNamespace
 		void createVBuf();
 		void createIBuf();
 		void createRast();
-		void initTexture();
 
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
 		void setVBuf(ID3D11Buffer* &buf);

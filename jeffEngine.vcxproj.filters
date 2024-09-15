@@ -93,6 +93,9 @@
     <ClInclude Include="jeffDeviceState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

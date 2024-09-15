@@ -231,8 +231,8 @@ void jGraphics::draw2D()
 	jRT->BeginDraw();
 
 	// Temporary test
-	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(140), static_cast<FLOAT>(50));
-	std::wstring frameHz = L"test";
+	D2D1_RECT_F layoutRect = D2D1::RectF(static_cast<FLOAT>(0), static_cast<FLOAT>(0), static_cast<FLOAT>(100), static_cast<FLOAT>(50));
+	std::wstring frameHz = std::to_wstring((int)(1.0f / delta));
 	jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
 
 	HRESULT hr = jRT->EndDraw();

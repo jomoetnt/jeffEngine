@@ -68,3 +68,11 @@ DirectX::XMMATRIX jeffObject::getTransformMat() const
 
 	return childTransform * parent->getTransformMat();
 }
+
+void jeffObject::translateLocal(DirectX::XMFLOAT3 offset)
+{
+	DirectX::XMVECTOR offVec = DirectX::XMLoadFloat3(&offset);
+	offVec = DirectX::XMVector3Transform(offVec, DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&transformRotation)));
+	DirectX::XMStoreFloat3(&offset, offVec);
+	transformPosition.x += offset.x; transformPosition.y += offset.y; transformPosition.z += offset.z;
+}

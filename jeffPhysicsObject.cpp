@@ -23,6 +23,9 @@ void jeffPhysicsObject::tick(float delta)
 	// temporary test
 	transformRotation.x += delta;
 	transformRotation.z += delta * 0.5f;
+
+	velocity.x += acceleration.x * delta; velocity.y += acceleration.y * delta; velocity.z += acceleration.z * delta;
+	transformPosition.x += velocity.x * delta; transformPosition.y += velocity.y * delta; transformPosition.z += velocity.z * delta;
 }
 
 void jeffPhysicsObject::handleInputEvent(JEFF_KEY key, float* coords, bool keydown)

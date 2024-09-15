@@ -28,7 +28,7 @@ namespace jeffNamespace
 			cube = new jeffPhysicsObject("jeffCube", DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			addPhysicsObject(cube);
 
-			jeffModel* jModel2 = new jeffModel("sphereModel", "models/pingu.obj");
+			jeffModel* jModel2 = new jeffModel("sphereModel", "models/tailung.obj");
 			jModel2->transformPosition = DirectX::XMFLOAT3(2.0f, 0.0f, 7.0f);
 			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube); 
 			addModel(jModel2);

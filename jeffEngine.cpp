@@ -9,6 +9,7 @@ constexpr int MAX_LOADSTRING = 100;
 constexpr int WINDOW_WIDTH = 1920;
 constexpr int WINDOW_HEIGHT = 1080;
 
+constexpr int FRAMETIME = 1000 / 144;
 constexpr int PHYSICS_FRAMETIME = 1000 / 60;
 
 // Global Variables:
@@ -25,29 +26,50 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 using namespace jeffNamespace;
 
 std::thread jThread;
+std::thread jThread2;
 int quit = 0;
+
+float refreshTimer = 0.0f;
 
 // temporary test
 testGame* game;
 
-static void timer_start(std::function<void(void)> func, unsigned int interval)
+static void timer_start()
 {
-    jThread = std::thread([func, interval]()
+    jThread = std::thread([]()
     {
+        float delta = 0.0f;
         while (quit == 0)
         {
-            auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
-            func();
-            std::this_thread::sleep_until(x);
+            auto y = std::chrono::steady_clock::now();
+            jeffManager::getInstance()->doFrame();
+            std::this_thread::sleep_for(std::chrono::milliseconds(FRAMETIME));
+            auto z = std::chrono::steady_clock::now();
+            auto w = z - y;
+            delta = std::chrono::duration_cast<std::chrono::microseconds>(w).count() / 1000000.0f;
+            refreshTimer += delta;
+            if (refreshTimer > 0.1f)
+            {
+                jGraphics::getInstance()->delta = delta;
+                refreshTimer = 0.0f;
+            }
         }
     });
     jThread.detach();
-}
-
-static void runPhysics()
-{
-    jeffManager::getInstance()->doPhysicsTick((float)(PHYSICS_FRAMETIME / 1000.0f));
-    jeffManager::getInstance()->doFrame();
+    jThread2 = std::thread([]()
+    {
+        float delta2 = 0.0f;
+        while (quit == 0)
+        {
+            auto y2 = std::chrono::steady_clock::now();
+            jeffManager::getInstance()->doPhysicsTick(delta2);
+            std::this_thread::sleep_for(std::chrono::milliseconds(PHYSICS_FRAMETIME));
+            auto z2 = std::chrono::steady_clock::now();
+            auto w2 = z2 - y2;
+            delta2 = std::chrono::duration_cast<std::chrono::microseconds>(w2).count() / 1000000.0f;
+        }
+    });
+    jThread2.detach();
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -133,7 +155,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     jeffManager::makeInstance();
     game = new testGame();
 
-    timer_start(runPhysics, PHYSICS_FRAMETIME);
+    timer_start();
 
     return TRUE;
 }

@@ -23,10 +23,10 @@ namespace jeffNamespace
 		{
 			switch (key)
 			{
-			case UP: transformPosition.z += 0.1f; break;
-			case DOWN: transformPosition.z -= 0.1f; break;
-			case LEFT: transformPosition.x -= 0.1f; break;
-			case RIGHT: transformPosition.x += 0.1f; break;
+			case UP: translateLocal(DirectX::XMFLOAT3(0.0f, 0.0f, 0.1f)); break;
+			case DOWN: translateLocal(DirectX::XMFLOAT3(0.0f, 0.0f, -0.1f)); break;
+			case LEFT: translateLocal(DirectX::XMFLOAT3(-0.1f, 0.0f, 0.0f)); break;
+			case RIGHT: translateLocal(DirectX::XMFLOAT3(0.1f, 0.0f, 0.0f)); break;
 			case LCTRL: transformPosition.y -= 0.1f; break;
 			case SPACEBAR: transformPosition.y += 0.1f; break;
 			case Z: transformRotation.y -= 0.1f; break;

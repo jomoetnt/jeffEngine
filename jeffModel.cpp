@@ -1,5 +1,4 @@
 #include "jeffModel.h"	
-#include <DDSTextureLoader.h>
 
 using namespace jeffNamespace;
 
@@ -8,11 +7,12 @@ jeffModel::jeffModel(const char* modelName, const char* meshFilename) : jeffObje
 	jDev = jeffDeviceState::getInstance()->jDev; jContext = jeffDeviceState::getInstance()->jContext;
 
 	mesh.loadFromObj(meshFilename);
+	if (!mesh.materialPath.empty())
+		mat.loadFromMtl(mesh.materialPath.c_str());
 
 	createRast();
 	createVBuf();
 	createIBuf();
-	initTexture();
 
 	initObject();
 }
@@ -23,29 +23,6 @@ jeffModel::~jeffModel()
 	jIndexBuf->Release();
 	jVConstBuf->Release();
 	jPConstBuf->Release();
-	jDiffuseTexture->Release();
-	jSRView->Release();
-	jSamState->Release();
-}
-
-void jeffModel::initTexture()
-{
-	// temporary test
-	HRESULT hr = DirectX::CreateDDSTextureFromFile(jDev, jContext, L"pingu.dds", (ID3D11Resource**)&jDiffuseTexture, &jSRView);
-	if (FAILED(hr)) throw std::runtime_error("error creating texture");
-
-	D3D11_SAMPLER_DESC jSamplerDesc{};
-	jSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	jSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	jSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	jSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	jSamplerDesc.MipLODBias = 0;
-	jSamplerDesc.MaxAnisotropy = 1;
-	jSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	jSamplerDesc.MinLOD = 0;
-	jSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = jDev->CreateSamplerState(&jSamplerDesc, &jSamState);
-	if (FAILED(hr)) throw std::runtime_error("error creating sampler state");
 }
 
 void jeffModel::createVBuf()
@@ -78,7 +55,8 @@ void jeffModel::createIBuf()
 
 void jeffModel::createRast()
 {
-	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(wireframe ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, wireframe ? D3D11_CULL_NONE : D3D11_CULL_BACK, false, 0, 0, 0, false, false, false, false);
+	D3D11_CULL_MODE mode = transformScale.x * transformScale.y * transformScale.z < 0.0f ? D3D11_CULL_BACK: D3D11_CULL_FRONT;
+	D3D11_RASTERIZER_DESC jRDesc = CD3D11_RASTERIZER_DESC(wireframe ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, wireframe ? D3D11_CULL_NONE : mode, true, 0, 0, 0, true, true, false, false);
 	HRESULT hr = jDev->CreateRasterizerState(&jRDesc, &jRast);
 	if (FAILED(hr)) throw std::runtime_error("error creating rasterizer state");
 }
@@ -162,6 +140,6 @@ void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 	if (FAILED(hr)) throw std::runtime_error("error creating pixel constant buffer");
 	jContext->PSSetConstantBuffers(1, 1, &jPConstBuf);
 
-	jContext->PSSetShaderResources(0, 1, &jSRView);
-	jContext->PSSetSamplers(0, 1, &jSamState);
+	jContext->PSSetShaderResources(0, mat.jViews.size(), mat.jViews.data());
+	jContext->PSSetSamplers(0, mat.jSams.size(), mat.jSams.data());
 }

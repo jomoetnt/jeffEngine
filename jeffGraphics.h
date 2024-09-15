@@ -28,6 +28,8 @@ namespace jeffNamespace
 
 		int screenWidth = 0; int screenHeight = 0;
 
+		float delta = 0.0f;
+
 	private:
 		static inline jGraphics* instance;
 

@@ -17,7 +17,7 @@ namespace jeffNamespace
 		} boundingBox;
 
 		DirectX::XMFLOAT3 velocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-		DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(0.1f, 0.0f, 0.0f);
 
 		jeffModel* debugShape = nullptr;
 

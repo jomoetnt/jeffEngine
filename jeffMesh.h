@@ -27,6 +27,8 @@ namespace jeffNamespace
 		std::vector<int> indices;
 
 		std::string name;
+		std::string meshPath;
+		std::string materialPath;
 
 		bool smoothShading = false;
 		JEFF_TOPOLOGY meshTopology = TRIANGLE;

@@ -40,6 +40,7 @@ namespace jeffNamespace
 		void addChild(jeffObject* child);
 		jeffObject* find(std::string name);
 		DirectX::XMMATRIX getTransformMat() const;
+		void translateLocal(DirectX::XMFLOAT3 offset);
 		// Events
 		virtual void handleEvent(JEFF_EVENT_TYPE eventType, void* jParams);
 		virtual void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) {}

@@ -62,7 +62,7 @@ void jGraphics::makeSwapchain()
 	DXGI_SWAP_CHAIN_DESC jSDesc{};
 	jSDesc.BufferDesc.Width = 0; jSDesc.BufferDesc.Height = 0;
 	jSDesc.BufferDesc.RefreshRate.Numerator = 0; jSDesc.BufferDesc.RefreshRate.Denominator = 0;
-	jSDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	jSDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	jSDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	jSDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	jSDesc.SampleDesc.Count = 1;

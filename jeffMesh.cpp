@@ -2,44 +2,11 @@
 
 using namespace jeffNamespace;
 
-// Remove duplicate vertices in future
-void jeffMesh::loadFromObj(const char* filename)
-{
-    meshPath = filename;
-
-    std::ifstream file(filename);
-
-    std::string line;
-
-    if (file.is_open())
-    {
-        int i = 0;
-
-        while (std::getline(file, line))
-        {
-            objProcessLine(line, i);
-        }
-
-        file.close();
-    }
-    else
-    {
-        throw std::runtime_error("could not open obj");
-    }
-}
-
-void jeffMesh::objProcessLine(std::string line, int& i)
+void jeffMesh::objProcessLine(std::string line, int& i, vertVecStruct* vertStruct)
 {
     // Ignore comments (in obj)
     if (line[0] == '#')
         return;
-
-    // Get object name
-    if (line[0] == 'o')
-    {
-        name = line.erase(0, 2);
-        return;
-    }
 
     // Set smooth shading
     if (line[0] == 's')
@@ -61,7 +28,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT3 vpos = DirectX::XMFLOAT3(-std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
-            vpositions.emplace_back(vpos);
+            vertStruct->vpositions.emplace_back(vpos);
             return;
         }
         // Add vertex normal
@@ -71,7 +38,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT3 vnorm = DirectX::XMFLOAT3(std::stof(components[0]), std::stof(components[1]), std::stof(components[2]));
-            vnormals.emplace_back(vnorm);
+            vertStruct->vnormals.emplace_back(vnorm);
             return;
         }
         // Add vertex texture coordinate
@@ -81,7 +48,7 @@ void jeffMesh::objProcessLine(std::string line, int& i)
             std::vector<std::string> components = jeffJSON::split(line, " ");
 
             DirectX::XMFLOAT2 vtex = DirectX::XMFLOAT2(std::stof(components[0]), 1.0f - std::stof(components[1]));
-            vtexcoords.emplace_back(vtex);
+            vertStruct->vtexcoords.emplace_back(vtex);
             return;
         }
     }
@@ -89,14 +56,26 @@ void jeffMesh::objProcessLine(std::string line, int& i)
     // Add face
     if (line[0] == 'f')
     {
+        if (groups.empty())
+        {
+            jeffVertexGroup* newGroup = new jeffVertexGroup();
+            groups.emplace_back(newGroup);
+        }
+
         meshTopology = TRIANGLE;
-        handleFace(line, i);
+        handleFace(line, i, vertStruct);
         return;
     }
 
     // Add line
     if (line[0] == 'l')
     {
+        if (groups.empty())
+        {
+            jeffVertexGroup* newGroup = new jeffVertexGroup();
+            groups.emplace_back(newGroup);
+        }
+
         meshTopology = LINE;
 
         line = line.erase(0, 2);
@@ -107,25 +86,16 @@ void jeffMesh::objProcessLine(std::string line, int& i)
         jeffVertex vert1{};
         jeffVertex vert2{};
 
-        vert1.position = vpositions[vindex1];
-        vert2.position = vpositions[vindex2];
-        vertices.emplace_back(vert1); vertices.emplace_back(vert2);
+        vert1.position = vertStruct->vpositions[vindex1];
+        vert2.position = vertStruct->vpositions[vindex2];
+        groups.back()->vertices.emplace_back(vert1); groups.back()->vertices.emplace_back(vert2);
 
-        indices.emplace_back(i++); indices.emplace_back(i++);
+        groups.back()->indices.emplace_back(i++); groups.back()->indices.emplace_back(i++);
         return;
-    }
-
-    if (line.substr(0, 6).compare("mtllib") == 0)
-    {
-        materialPath = line.substr(7);
-
-        size_t dir = meshPath.rfind('//');
-        line = meshPath.substr(0, dir + 1);
-        materialPath = line.append(materialPath);
     }
 }
 
-void jeffMesh::handleFace(std::string line, int& i)
+void jeffMesh::handleFace(std::string line, int& i, vertVecStruct* vertStruct)
 {
     // Split up slashes and spaces - obj format is (for example) 5/1/1 3/2/5 4/3/2
     line = line.erase(0, 2);
@@ -144,29 +114,29 @@ void jeffMesh::handleFace(std::string line, int& i)
     int vindex2 = std::stoi(indices2[0]) - 1;
     int vindex3 = std::stoi(indices3[0]) - 1;
 
-    vert1.position = DirectX::XMFLOAT3(vpositions[vindex1]);
-    vert2.position = DirectX::XMFLOAT3(vpositions[vindex2]);
-    vert3.position = DirectX::XMFLOAT3(vpositions[vindex3]);
+    vert1.position = DirectX::XMFLOAT3(vertStruct->vpositions[vindex1]);
+    vert2.position = DirectX::XMFLOAT3(vertStruct->vpositions[vindex2]);
+    vert3.position = DirectX::XMFLOAT3(vertStruct->vpositions[vindex3]);
 
     vindex1 = std::stoi(indices1[1]) - 1;
     vindex2 = std::stoi(indices2[1]) - 1;
     vindex3 = std::stoi(indices3[1]) - 1;
     
-    vert1.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex1]);
-    vert2.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex2]);
-    vert3.texcoord = DirectX::XMFLOAT2(vtexcoords[vindex3]);
+    vert1.texcoord = DirectX::XMFLOAT2(vertStruct->vtexcoords[vindex1]);
+    vert2.texcoord = DirectX::XMFLOAT2(vertStruct->vtexcoords[vindex2]);
+    vert3.texcoord = DirectX::XMFLOAT2(vertStruct->vtexcoords[vindex3]);
 
     vindex1 = std::stoi(indices1[2]) - 1;
     vindex2 = std::stoi(indices2[2]) - 1;
     vindex3 = std::stoi(indices3[2]) - 1;
 
-    vert1.normal = DirectX::XMFLOAT3(vnormals[vindex1]);
-    vert2.normal = DirectX::XMFLOAT3(vnormals[vindex2]);
-    vert3.normal = DirectX::XMFLOAT3(vnormals[vindex3]);
+    vert1.normal = DirectX::XMFLOAT3(vertStruct->vnormals[vindex1]);
+    vert2.normal = DirectX::XMFLOAT3(vertStruct->vnormals[vindex2]);
+    vert3.normal = DirectX::XMFLOAT3(vertStruct->vnormals[vindex3]);
 
-    vertices.emplace_back(vert1);
-    vertices.emplace_back(vert2);
-    vertices.emplace_back(vert3);
+    groups.back()->vertices.emplace_back(vert1);
+    groups.back()->vertices.emplace_back(vert2);
+    groups.back()->vertices.emplace_back(vert3);
 
     // Determine winding order
     DirectX::XMVECTOR vertex1 = DirectX::XMLoadFloat3(&vert1.position);
@@ -189,8 +159,8 @@ void jeffMesh::handleFace(std::string line, int& i)
     DirectX::XMFLOAT3 agreement;
     DirectX::XMStoreFloat3(&agreement, alignment);
 
-    indices.emplace_back(i);
-    indices.emplace_back(i + 2);
-    indices.emplace_back(i + 1);
+    groups.back()->indices.emplace_back(i);
+    groups.back()->indices.emplace_back(i + 2);
+    groups.back()->indices.emplace_back(i + 1);
     i += 3;
 }

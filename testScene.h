@@ -30,7 +30,7 @@ namespace jeffNamespace
 
 			jeffModel* jModel2 = new jeffModel("sphereModel", "models/tailung.obj");
 			jModel2->transformPosition = DirectX::XMFLOAT3(2.0f, 0.0f, 7.0f);
-			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube); 
+			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube);
 			addModel(jModel2);
 		}
 

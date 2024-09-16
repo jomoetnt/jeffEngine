@@ -8,6 +8,8 @@
 #include <stack>
 #include <optional>
 #include <sstream>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 class jeffJSON
 {
@@ -67,6 +69,16 @@ public:
             output.erase(pos, delimiter.length());
         }
         return output;
+    }
+
+    static std::string fromWidestring(std::wstring input)
+    {
+        int bufSize = WideCharToMultiByte(CP_ACP, 0, input.c_str(), -1, nullptr, 0, NULL, NULL);
+        char* buffer = new char[bufSize];
+        WideCharToMultiByte(CP_ACP, 0, input.c_str(), -1, buffer, bufSize, NULL, NULL);
+        std::string str(buffer);
+        delete[] buffer;
+        return str;
     }
 
     //static JSONObject readJSON(const char* filename)

@@ -6,9 +6,7 @@ jeffModel::jeffModel(const char* modelName, const char* meshFilename) : jeffObje
 {
 	jDev = jeffDeviceState::getInstance()->jDev; jContext = jeffDeviceState::getInstance()->jContext;
 
-	mesh.loadFromObj(meshFilename);
-	if (!mesh.materialPath.empty())
-		mat.loadFromMtl(mesh.materialPath.c_str());
+	loadFromObj(meshFilename);
 
 	createRast();
 	createVBuf();
@@ -19,38 +17,177 @@ jeffModel::jeffModel(const char* modelName, const char* meshFilename) : jeffObje
 
 jeffModel::~jeffModel()
 {
-	jVertBuf->Release();
-	jIndexBuf->Release();
 	jVConstBuf->Release();
 	jPConstBuf->Release();
 }
 
+// Remove duplicate vertices in future
+void jeffModel::loadFromObj(const char* filename)
+{
+	std::string meshPath = filename;
+
+	std::ifstream file(filename);
+
+	jeffMesh::vertVecStruct vertStruct;
+
+	std::string line;
+	if (file.is_open())
+	{
+		int i = 0;
+
+		while (std::getline(file, line))
+		{
+			// Get object name
+			if (line[0] == 'o')
+			{
+				jeffMesh newMesh;
+				newMesh.name = line.erase(0, 2);
+				newMesh.meshPath = meshPath;
+				meshes.emplace_back(newMesh);
+				i = 0;
+				continue;
+			}
+
+			if (line.substr(0, 6).compare("mtllib") == 0)
+			{
+				std::string materialPath = line.substr(7);
+
+				size_t dir = meshPath.rfind('/');
+				line = meshPath.substr(0, dir + 1);
+				materialPath = line.append(materialPath);
+
+				loadFromMtl(materialPath.c_str());
+				continue;
+			}
+
+			if (line[0] == 'u')
+			{
+				if (line.substr(0, 6).compare("usemtl") == 0)
+				{
+					jeffMesh::jeffVertexGroup* newGroup = new jeffMesh::jeffVertexGroup();
+					newGroup->mat = materialDictionary[line.substr(7)];
+					meshes.back().groups.emplace_back(newGroup);
+					i = 0;
+				}
+				continue;
+			}
+
+			if (meshes.empty()) continue;
+			meshes.back().objProcessLine(line, i, &vertStruct);
+		}
+
+		file.close();
+	}
+	else
+	{
+		throw std::runtime_error("could not open obj");
+	}
+}
+
+void jeffModel::loadFromMtl(const char* filename)
+{
+	std::wifstream file(filename);
+
+	std::wstring line;
+
+	std::wstring curMat;
+
+	if (file.is_open())
+	{
+		int i = 0;
+
+		while (std::getline(file, line))
+		{
+			if (line[0] == L'#') continue;
+
+			if (line[0] == L'N')
+			{
+				continue;
+			}
+
+			if (line[0] == L'K')
+			{
+				continue;
+			}
+
+			if (line[0] == L'd')
+			{
+				continue;
+			}
+
+			if (line[0] == L'i')
+			{
+				continue;
+			}
+
+			if (line[0] == L'n')
+			{
+				if (line.substr(0, 6).compare(L"newmtl") == 0)
+				{
+					curMat = line.substr(7);
+					materialDictionary[jeffJSON::fromWidestring(curMat)].name = curMat;
+				}
+				continue;
+			}
+
+			// diffuse texture
+			if (line[0] == L'm')
+			{
+				if (line.substr(0, 6).compare(L"map_Kd") == 0)
+				{
+					std::wstring mapName = line.substr(7);
+					materialDictionary[jeffJSON::fromWidestring(curMat)].initTexture(mapName.c_str(), jeffMaterial::DIFFUSE);
+				}
+				continue;
+			}
+		}
+
+		file.close();
+	}
+	else
+	{
+		throw std::runtime_error("could not open mtl");
+	}
+}
+
 void jeffModel::createVBuf()
 {
-	D3D11_BUFFER_DESC vBufferDesc{};
-	vBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(mesh.vertices.size() * sizeof(jeffMesh::jeffVertex)), D3D11_BIND_VERTEX_BUFFER);
+	for (auto& mesh : meshes)
+	{
+		for (auto& group : mesh.groups)
+		{
+			D3D11_BUFFER_DESC vBufferDesc{};
+			vBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(group->vertices.size() * sizeof(jeffMesh::jeffVertex)), D3D11_BIND_VERTEX_BUFFER);
 
-	D3D11_SUBRESOURCE_DATA vInitData{};
-	vInitData.pSysMem = mesh.vertices.data();
-	vInitData.SysMemPitch = 0;
-	vInitData.SysMemSlicePitch = 0;
+			D3D11_SUBRESOURCE_DATA vInitData{};
+			vInitData.pSysMem = group->vertices.data();
+			vInitData.SysMemPitch = 0;
+			vInitData.SysMemSlicePitch = 0;
 
-	HRESULT hr = jDev->CreateBuffer(&vBufferDesc, &vInitData, &jVertBuf);
-	if (FAILED(hr)) throw std::runtime_error("error creating vertex buffer");
+			HRESULT hr = jDev->CreateBuffer(&vBufferDesc, &vInitData, &group->jVertBuf);
+			if (FAILED(hr)) throw std::runtime_error("error creating vertex buffer");
+		}
+	}
 }
 
 void jeffModel::createIBuf()
 {
-	D3D11_BUFFER_DESC iBufferDesc{};
-	iBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(mesh.indices.size() * sizeof(int)), D3D11_BIND_INDEX_BUFFER);
+	for (auto& mesh : meshes)
+	{
+		for (auto& group : mesh.groups)
+		{
+			D3D11_BUFFER_DESC iBufferDesc{};
+			iBufferDesc = CD3D11_BUFFER_DESC(static_cast<UINT>(group->indices.size() * sizeof(int)), D3D11_BIND_INDEX_BUFFER);
 
-	D3D11_SUBRESOURCE_DATA iInitData{};
-	iInitData.pSysMem = mesh.indices.data();
-	iInitData.SysMemPitch = 0;
-	iInitData.SysMemSlicePitch = 0;
+			D3D11_SUBRESOURCE_DATA iInitData{};
+			iInitData.pSysMem = group->indices.data();
+			iInitData.SysMemPitch = 0;
+			iInitData.SysMemSlicePitch = 0;
 
-	HRESULT hr = jDev->CreateBuffer(&iBufferDesc, &iInitData, &jIndexBuf);
-	if (FAILED(hr)) throw std::runtime_error("error creating index buffer");
+			HRESULT hr = jDev->CreateBuffer(&iBufferDesc, &iInitData, &group->jIndexBuf);
+			if (FAILED(hr)) throw std::runtime_error("error creating index buffer");
+		}
+	}
 }
 
 void jeffModel::createRast()
@@ -73,15 +210,22 @@ void jeffModel::draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional
 	jPConstBufStruct.dirLight = jeffLight::threeToFour(dirLight->transformRotation);
 	jPConstBufStruct.dirLightColour = DirectX::XMFLOAT4(dirLight->lightColour);
 
-	setVBuf(jVertBuf);
-	setIBuf(jIndexBuf);
-	setConstantBuffer(time, camera);
 	jContext->RSSetState(jRast);
 	if (wireframe)
 		jContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	else
 		jContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	jContext->DrawIndexed((UINT)mesh.indices.size(), 0, 0);
+
+	for (auto& mesh : meshes)
+	{
+		for (auto& group : mesh.groups)
+		{
+			setConstantBuffer(time, camera, group->mat);
+			setVBuf(group->jVertBuf);
+			setIBuf(group->jIndexBuf);
+			jContext->DrawIndexed((UINT)group->indices.size(), 0, 0);
+		}
+	}
 }
 
 void jeffModel::setVBuf(ID3D11Buffer* &buf)
@@ -96,7 +240,7 @@ void jeffModel::setIBuf(ID3D11Buffer* &buf)
 	jContext->IASetIndexBuffer(buf, DXGI_FORMAT_R32_UINT, 0);
 }
 
-void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
+void jeffModel::setConstantBuffer(float time, jeffCamera* camera, jeffMaterial &mat)
 {
 	jVConstBufStruct.transformMat = DirectX::XMMatrixTranspose(getTransformMat());
 
@@ -140,6 +284,6 @@ void jeffModel::setConstantBuffer(float time, jeffCamera* camera)
 	if (FAILED(hr)) throw std::runtime_error("error creating pixel constant buffer");
 	jContext->PSSetConstantBuffers(1, 1, &jPConstBuf);
 
-	jContext->PSSetShaderResources(0, mat.jViews.size(), mat.jViews.data());
-	jContext->PSSetSamplers(0, mat.jSams.size(), mat.jSams.data());
+	jContext->PSSetShaderResources(0, (UINT)mat.jViews.size(), mat.jViews.data());
+	jContext->PSSetSamplers(0, (UINT)mat.jSams.size(), mat.jSams.data());
 }

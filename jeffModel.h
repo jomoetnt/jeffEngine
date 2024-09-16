@@ -4,7 +4,6 @@
 #include "jeffCamera.h"
 #include "jeffLightPoint.h"
 #include "jeffLightDirectional.h"
-#include "jeffMaterial.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <array>
@@ -31,16 +30,14 @@ namespace jeffNamespace
 			DirectX::XMFLOAT4 wireframe = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		} jPConstBufStruct;
 
-		jeffMesh mesh;
-		jeffMaterial mat;
+		std::vector<jeffMesh> meshes;
+		std::unordered_map<std::string, jeffMaterial> materialDictionary;
 
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
 		ID3D11RasterizerState* jRast = nullptr;
 		ID3D11Buffer* jVConstBuf = nullptr;
 		ID3D11Buffer* jPConstBuf = nullptr;
-		ID3D11Buffer* jVertBuf = nullptr;
-		ID3D11Buffer* jIndexBuf = nullptr;
 
 		bool wireframe = false;
 
@@ -48,10 +45,13 @@ namespace jeffNamespace
 		void createIBuf();
 		void createRast();
 
+		void loadFromObj(const char* filename);
+		void loadFromMtl(const char* filename);
+
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
 		void setVBuf(ID3D11Buffer* &buf);
 		void setIBuf(ID3D11Buffer*& buf);
-		void setConstantBuffer(float time, jeffCamera* camera);
+		void setConstantBuffer(float time, jeffCamera* camera, jeffMaterial &mat);
 
 		jeffModel(const char* modelName, const char* meshFilename);
 		jeffModel() = default;

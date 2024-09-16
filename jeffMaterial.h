@@ -25,6 +25,8 @@ namespace jeffNamespace
         std::vector <ID3D11ShaderResourceView*> jViews;
         std::vector <ID3D11SamplerState*> jSams;
 
+        std::wstring name;
+
         jeffMaterial()
         {
             jDev = jeffDeviceState::getInstance()->jDev; jContext = jeffDeviceState::getInstance()->jContext;
@@ -57,58 +59,6 @@ namespace jeffNamespace
             jSams.emplace_back(sam);
         }
 
-		void loadFromMtl(const char* filename)
-		{
-            std::wifstream file(filename);
 
-            std::wstring line;
-
-            if (file.is_open())
-            {
-                int i = 0;
-
-                while (std::getline(file, line))
-                {
-                    if (line[0] == L'#') continue;
-
-                    if (line[0] == L'N')
-                    {
-                        continue;
-                    }
-
-                    if (line[0] == L'K')
-                    {
-                        continue;
-                    }
-
-                    if (line[0] == L'd')
-                    {
-                        continue;
-                    }
-
-                    if (line[0] == L'i')
-                    {
-                        continue;
-                    }
-
-                    if (line[0] == L'n')
-                    {
-                        continue;
-                    }
-
-                    // diffuse texture
-                    if (line[0] == L'm')
-                    {
-                        initTexture(line.substr(7).c_str(), DIFFUSE);
-                    }
-                }
-
-                file.close();
-            }
-            else
-            {
-                throw std::runtime_error("could not open mtl");
-            }
-		}
 	};
 }

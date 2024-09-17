@@ -9,7 +9,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd D:/nonsense/Visual Studio Projects/jeffEngine/tailung.dds
+map_Kd tailung.dds
 
 newmtl Eyes
 Ns 96.078415
@@ -19,4 +19,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd D:/nonsense/Visual Studio Projects/jeffEngine/eye.dds
+map_Kd eye.dds

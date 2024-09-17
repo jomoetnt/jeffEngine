@@ -43,7 +43,7 @@ static void timer_start()
         {
             auto y = std::chrono::steady_clock::now();
             jeffManager::getInstance()->doFrame();
-            std::this_thread::sleep_for(std::chrono::milliseconds(FRAMETIME));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(FRAMETIME));
             auto z = std::chrono::steady_clock::now();
             auto w = z - y;
             delta = std::chrono::duration_cast<std::chrono::microseconds>(w).count() / 1000000.0f;

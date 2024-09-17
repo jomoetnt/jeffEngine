@@ -28,6 +28,7 @@ namespace jeffNamespace
 			DirectX::XMFLOAT4 dirLight = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
 			DirectX::XMFLOAT4 dirLightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 			DirectX::XMFLOAT4 wireframe = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+			DirectX::XMFLOAT4 reflectionConstants = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		} jPConstBufStruct;
 
 		std::vector<jeffMesh> meshes;
@@ -52,6 +53,41 @@ namespace jeffNamespace
 		void setVBuf(ID3D11Buffer* &buf);
 		void setIBuf(ID3D11Buffer*& buf);
 		void setConstantBuffer(float time, jeffCamera* camera, jeffMaterial &mat);
+
+		float* mutableParams[4];
+		int curParam = 0;
+
+		// temporary test
+		void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) override
+		{
+			for (auto& mesh : meshes)
+			{
+				for (auto& group : mesh.groups)
+				{
+					mutableParams[0] = &group->mat.properties.z; mutableParams[1] = &group->mat.properties.y; mutableParams[2] = &group->mat.properties.x;
+					mutableParams[3] = &group->mat.properties.w;
+				}
+			}
+			switch (key)
+			{
+			case W:
+				*mutableParams[curParam] += 0.1f;
+				break;
+			case S:
+				*mutableParams[curParam] -= 0.1f;
+				break;
+			case D:
+				curParam++;
+				if (curParam >= 4)
+					curParam = 0;
+				break;
+			case A:
+				curParam--;
+				if (curParam <= 0)
+					curParam = 3;
+				break;
+			}
+		}
 
 		jeffModel(const char* modelName, const char* meshFilename);
 		jeffModel() = default;

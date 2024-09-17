@@ -249,6 +249,7 @@ void jeffModel::setConstantBuffer(float time, jeffCamera* camera, jeffMaterial &
 	jVConstBufStruct.cameraMat = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, cam));
 	jVConstBufStruct.projMat = DirectX::XMMatrixTranspose(camera->projectionMatrix);
 	jPConstBufStruct.wireframe = wireframe ? DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f):DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	jPConstBufStruct.reflectionConstants = mat.properties;
 
 	D3D11_BUFFER_DESC jVDesc{};
 	jVDesc.ByteWidth = sizeof(jVConstBufStruct);

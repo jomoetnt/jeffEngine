@@ -14,12 +14,6 @@ namespace jeffNamespace
 
 			jeffAudio::getInstance()->loadSound(L"testSound.wav");
 
-			for (int i = 0; i < 4; i++)
-			{
-				jPointLights[i] = new jeffLightPoint("jeffLight");
-				rootNode.addChild(jPointLights[i]);
-			}
-
 			jDirLight = new jeffLightDirectional("jeffLight");
 			jActiveCam = new jeffCamera("jeffCam");
 			rootNode.addChild(jDirLight);
@@ -32,6 +26,12 @@ namespace jeffNamespace
 			jModel2->transformPosition = DirectX::XMFLOAT3(2.0f, 0.0f, 7.0f);
 			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube);
 			addModel(jModel2);
+
+			for (int i = 0; i < 4; i++)
+			{
+				jPointLights[i] = new jeffLightPoint("jeffLight");
+				jActiveCam->addChild(jPointLights[i]);
+			}
 		}
 
 		~testScene()

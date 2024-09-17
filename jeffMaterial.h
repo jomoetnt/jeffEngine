@@ -6,6 +6,7 @@
 #include <d3d11.h>
 #include <DDSTextureLoader.h>
 #include "jeffDeviceState.h"
+#include <DirectXMath.h>
 
 namespace jeffNamespace
 {
@@ -24,6 +25,9 @@ namespace jeffNamespace
         std::vector <ID3D11Texture2D*> jTextures;
         std::vector <ID3D11ShaderResourceView*> jViews;
         std::vector <ID3D11SamplerState*> jSams;
+
+        // k_s, k_d, k_a, alpha
+        DirectX::XMFLOAT4 properties = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
         std::wstring name;
 

@@ -53,16 +53,16 @@ float4 main(Input input) : SV_TARGET
 			float constantAttenuation = pointLightParams[i].z;
 			float attenuation = quadraticAttenuation * pow(rayLength, 2) + linearAttenuation * rayLength + constantAttenuation;
 
-			float4 intensity = pointLightColour[i] * pointLightColour[i].w / attenuation;
+			float4 intensity = pointLightColour[i] * pointLightColour[i].w;
 			intensity.w = 1.0f;
 
-			float4 diffuseTerm = max(float4(0.0f, 0.0f, 0.0f, 0.0f), k_diffuse * dot(realNormal, realRay) * intensity);
+			float4 diffuseTerm = k_diffuse * max(float4(0.0f, 0.0f, 0.0f, 0.0f), dot(realNormal, realRay)) * intensity;
 
 			float4 viewerDirection = -normalize(input.viewPosition);
 			float4 lightReflection = reflect(realRay, realNormal);
 			float4 specularTerm = max(float4(0.0f, 0.0f, 0.0f, 0.0f), k_specular * pow(dot(lightReflection, viewerDirection), shininess) * intensity);
 
-			brightness = diffuseTerm + specularTerm;
+			brightness = (diffuseTerm + specularTerm) / attenuation;
 			colour += brightness * diffuseColour;
 		}
 		colour += k_ambient * ambientLight * diffuseColour;

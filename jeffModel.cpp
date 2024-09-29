@@ -136,8 +136,13 @@ void jeffModel::loadFromMtl(const char* filename)
 				if (line.substr(0, 6).compare(L"map_Kd") == 0)
 				{
 					std::wstring mapName = line.substr(7);
-					materialDictionary[jeffJSON::fromWidestring(curMat)].initTexture(mapName.c_str(), jeffMaterial::DIFFUSE);
+					materialDictionary[jeffJSON::fromWidestring(curMat)].initTexture(mapName, jeffMaterial::DIFFUSE);
 				}
+				if (line.substr(0, 6).compare(L"map_d") == 0)
+				{
+					// alpha map
+				}
+
 				continue;
 			}
 		}

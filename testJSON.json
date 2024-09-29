@@ -1,0 +1,29 @@
+{
+	"testProperty": 24,
+	"testProperty2": 24.5,
+	"testProperty3": true,
+	"testProperty4": false,
+	"testProperty9": {
+		"subProperty15": 13.3,
+		"subProperty761": {
+			"subsubproperty4": "same",
+			"jeffpropertry": 91
+		},
+		"subProperty258": 13,
+		"subProperty763": {
+			"subsubproperty": "different"
+		},
+		"subProperty3": true
+	},
+	"testProperty5": null,
+	"testProperty7": "jeffstring",
+	"testProperty6": {
+		"subProperty": 12,
+		"subProperty2": 12.5,
+		"subProperty4": {
+			"subsubproperty": 29.55
+		},
+		"subProperty3": 12.8
+	},
+	"testProperty8": 14000
+}

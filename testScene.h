@@ -22,7 +22,7 @@ namespace jeffNamespace
 			cube = new jeffPhysicsObject("jeffCube", DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 			addPhysicsObject(cube);
 
-			jeffModel* jModel2 = new jeffModel("sphereModel", "models/tailung.obj");
+			jeffModel* jModel2 = new jeffModel("sphereModel", "models/multipingu.obj");
 			jModel2->transformPosition = DirectX::XMFLOAT3(2.0f, 0.0f, 7.0f);
 			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube);
 			addModel(jModel2);
@@ -32,6 +32,10 @@ namespace jeffNamespace
 				jPointLights[i] = new jeffLightPoint("jeffLight");
 				jActiveCam->addChild(jPointLights[i]);
 			}
+
+			jeffJSON::JSONObject testJSON;
+			jeffJSON::readJSON("testJSON.json", &testJSON);
+			std::string reString = testJSON.dictionary["testProperty7"].jeffString;
 		}
 
 		~testScene()

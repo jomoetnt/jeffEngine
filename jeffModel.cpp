@@ -25,7 +25,6 @@ jeffModel::~jeffModel()
 void jeffModel::loadFromObj(const char* filename)
 {
 	std::string meshPath = filename;
-
 	std::ifstream file(filename);
 
 	jeffMesh::vertVecStruct vertStruct;
@@ -87,11 +86,9 @@ void jeffModel::loadFromObj(const char* filename)
 void jeffModel::loadFromMtl(const char* filename)
 {
 	std::wifstream file(filename);
-
 	std::wstring line;
 
 	std::wstring curMat;
-
 	if (file.is_open())
 	{
 		int i = 0;
@@ -152,6 +149,23 @@ void jeffModel::loadFromMtl(const char* filename)
 	else
 	{
 		throw std::runtime_error("could not open mtl");
+	}
+}
+
+void jeffModel::loadFromGlb(const char* filename)
+{
+	std::string meshPath = filename;
+	std::ifstream file(filename);
+
+	jeffMesh::vertVecStruct vertStruct;
+
+	std::string line;
+	if (file.is_open())
+	{
+		while (std::getline(file, line))
+		{
+
+		}
 	}
 }
 

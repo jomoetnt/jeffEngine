@@ -16,14 +16,31 @@
 		"subProperty3": true
 	},
 	"testProperty5": null,
+	"testArray": [1, 2, 3, 4, 6, 5],
 	"testProperty7": "jeffstring",
 	"testProperty6": {
 		"subProperty": 12,
 		"subProperty2": 12.5,
+		"subarrayobjects": [
+			{
+				"subarrayobject1property": 591,
+				"subjeffarray": [54, 56, 58],
+				"subarrayobject1property2": 592
+			},
+			{
+				"subarrayobject2property": 513,
+				"subarrayobject1property2": 593
+			},
+			{
+				"subarrayobject3property": 686,
+				"subarrayobject1property2": 594
+			}
+		],
 		"subProperty4": {
 			"subsubproperty": 29.55
 		},
 		"subProperty3": 12.8
 	},
-	"testProperty8": 14000
+	"testProperty8": 14000,
+	"testArray": [1, "bababooey", 3.5, null, true, {"arrayobjproperty": 95}, ["subarrayelement1", "subarrayelement2"]]
 }

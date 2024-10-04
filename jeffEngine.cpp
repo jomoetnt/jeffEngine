@@ -42,7 +42,7 @@ static void timer_start()
         while (quit == 0)
         {
             auto y = std::chrono::steady_clock::now();
-            jeffManager::getInstance()->doFrame();
+            quit = jeffManager::getInstance()->doFrame();
             //std::this_thread::sleep_for(std::chrono::milliseconds(FRAMETIME));
             auto z = std::chrono::steady_clock::now();
             auto w = z - y;
@@ -79,8 +79,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO: Place code here.
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -163,35 +161,5 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-    case WM_DESTROY:
-        quit = 1;
-        jGraphics::destroyInstance();
-        jeffAudio::destroyInstance();
-        jeffManager::destroyInstance();
-        PostQuitMessage(0);
-        break;
-    case WM_KEYDOWN:
-        jeffManager::getInstance()->handleKeyEvent((char)wParam);
-        break;
-    case WM_MOUSEMOVE:
-        jeffManager::getInstance()->handleMouseEvent((float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam));
-        break;
-    case WM_LBUTTONDOWN:
-        jeffManager::getInstance()->handleKeyEvent(0x01);
-        break;
-    case WM_LBUTTONUP:
-        jeffManager::getInstance()->handleKeyEvent(0x01, false);
-        break;
-    case WM_RBUTTONDOWN:
-        jeffManager::getInstance()->handleKeyEvent(0x02);
-        break;
-    case WM_MBUTTONDOWN:
-        jeffManager::getInstance()->handleKeyEvent(0x04);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+    return jeffManager::getInstance()->handleInputEvent(hWnd, message, wParam, lParam);
 }

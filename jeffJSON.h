@@ -101,6 +101,59 @@ public:
 
         // comb through each sub-object and replace with an index for later recursive parsing (to prevent comma splitting from dissecting objects)
         std::vector<std::string> subObjects;
+        replaceObjects(body, subObjects);
+
+        // replace arrays as well
+        std::vector<std::string> arrays;
+        replaceArrays(body, arrays);
+
+        // handle properties
+        std::vector<std::string> properties = split(body, ",");
+        for (auto& property : properties)
+        {
+            JSONObject parsedProperty;
+            std::string propertyName = parseProperty(property, &parsedProperty, subObjects, arrays);
+            out->dictionary[propertyName] = parsedProperty;
+        }
+    }
+
+    static void parseArray(std::string unparsed, JSONObject* out, std::vector<std::string>& subObjects)
+    {
+        out->jeffType = JSONObject::ARRAY;
+
+        size_t charPointer = 0;
+
+        // remove whitespace
+        while (std::isspace(unparsed[charPointer])) charPointer++;
+
+        if (unparsed[charPointer] == '[') charPointer++;
+        else throw std::runtime_error("couldn't parse json: array missing opening bracket");
+
+        // remove whitespace
+        while (std::isspace(unparsed[charPointer])) charPointer++;
+
+        // find closing brace and get object body
+        size_t closeBracePos = unparsed.rfind(']');
+        std::string body = unparsed.substr(charPointer, closeBracePos - charPointer);
+
+        // replace sub-arrays
+        std::vector<std::string> arrays;
+        replaceArrays(body, arrays);
+
+        // handle elements
+        std::vector<std::string> elements = split(body, ",");
+        for (int i = 0; i < elements.size(); i++)
+        {
+            size_t pos = 0;
+            JSONObject parsedElement;
+            while (std::isspace(elements[i][pos])) pos++;
+            parsePropertyValue(elements[i], pos, subObjects, arrays, &parsedElement);
+            out->jeffArray.emplace_back(parsedElement);
+        }
+    }
+
+    static void replaceObjects(std::string& body, std::vector<std::string> &subObjects)
+    {
         // find first sub-object start
         size_t objStart = body.find('{');
         size_t objEnd = -1;
@@ -136,105 +189,159 @@ public:
             body.replace(objStart + 1, objEnd - objStart - 1, indexString);
             objStart = body.find('{', objStart + 1);
         }
-        // handle properties
-        std::vector<std::string> properties = split(body, ",");
-        for (auto& property : properties)
+    }
+
+    static void replaceArrays(std::string& body, std::vector<std::string>& arrays)
+    {
+        // find first sub-object start
+        size_t arrStart = body.find('[');
+        size_t arrEnd = -1;
+        while (arrStart != -1)
         {
-            JSONObject parsedProperty;
-
-            size_t i = 0;
-            while (std::isspace(property[i])) i++;
-
-            // parse property name
-            if (property[i] != '"') throw std::runtime_error("couldn't parse json: unquoted property name");
-            std::string propertyName = property.substr(++i);
-            size_t closeQuote = propertyName.find('"'); if (closeQuote == -1) throw std::runtime_error("couldn't parse json: unquoted property name");
-            propertyName = propertyName.substr(0, closeQuote);
-            
-            // parse property value
-            i += propertyName.length() + 1;
-            while (std::isspace(property[i])) i++;
-            if (property[i] != ':') throw std::runtime_error("couldn't parse json: missing colon after property name");
-            else i++;
-            while (std::isspace(property[i])) i++;
-            std::string propertyValue = property.substr(i);
+            // find matching closing bracket
+            int numOpenBrackets = 0;
+            for (int i = arrStart + 1; i < body.length(); i++)
             {
-                // figure out the type of value
-                if (propertyValue.find('{') != -1)
+                if (body[i] == '[')
                 {
-                    char last = propertyValue.back();
-                    int objIndex = std::stoi(propertyValue.substr(1, last));
-
-                    parseObject(subObjects[objIndex], &parsedProperty);
+                    numOpenBrackets++;
                 }
-                else if (propertyValue.find('.') != -1)
+                else if (body[i] == ']')
                 {
-                    parsedProperty.jeffType = JSONObject::FLOAT;
-                    parsedProperty.jeffFloat = std::stof(propertyValue);
-                }
-                else if (propertyValue.find('"') != -1)
-                {
-                    parsedProperty.jeffType = JSONObject::STRING;
-                    int closeQuote = propertyValue.find('"', 1);
-                    if (closeQuote == -1) throw std::runtime_error("couldn't parse JSON: missing closing quote");
-                    parsedProperty.jeffString = propertyValue.substr(1, closeQuote - 1);
-                }
-                else if (propertyValue.find("true") != -1)
-                {
-                    std::string whitespaceGone = "";
-                    for (int k = 0; k < propertyValue.length(); k++)
+                    if (numOpenBrackets == 0)
                     {
-                        if (!std::isspace(propertyValue[k]))
-                            whitespaceGone.push_back(propertyValue[k]);
+                        arrEnd = i;
+                        break;
                     }
-                    if (whitespaceGone.compare("true") == 0)
-                    {
-                        parsedProperty.jeffType = JSONObject::BOOL;
-                        parsedProperty.jeffBool = true;
-                    }
-                }
-                else if (propertyValue.find("false") != -1)
-                {
-                    std::string whitespaceGone = "";
-                    for (int k = 0; k < propertyValue.length(); k++)
-                    {
-                        if (!std::isspace(propertyValue[k]))
-                            whitespaceGone.push_back(propertyValue[k]);
-                    }
-                    if (whitespaceGone.compare("false") == 0)
-                    {
-                        parsedProperty.jeffType = JSONObject::BOOL;
-                        parsedProperty.jeffBool = false;
-                    }
-                }
-                else if (propertyValue.find('[') != -1)
-                {
-                    // handle array
-                    parsedProperty.jeffType = JSONObject::ARRAY;
-
-
-                }
-                else if (propertyValue.find("null") != -1)
-                {
-                    std::string whitespaceGone = "";
-                    for (int k = 0; k < propertyValue.length(); k++)
-                    {
-                        if (!std::isspace(propertyValue[k]))
-                            whitespaceGone.push_back(propertyValue[k]);
-                    }
-                    if (whitespaceGone.compare("null") == 0)
-                    {
-                        parsedProperty.jeffType = JSONObject::NULLVALUE;
-                    }
-                }
-                else
-                {
-                    parsedProperty.jeffType = JSONObject::INT;
-                    parsedProperty.jeffInt = std::stoi(propertyValue);
+                    numOpenBrackets--;
                 }
             }
+            if (arrEnd == -1) throw std::runtime_error("error parsing JSON: mismatched brackets");
 
-            out->dictionary[propertyName] = parsedProperty;
+            // store entire sub-object
+            std::string unparsedArray = body.substr(arrStart, arrEnd - arrStart + 2);
+            // create replacement string
+            std::string indexString = std::to_string(arrays.size());
+
+            // add unparsed sub-object to list (for later parsing) and replace with index
+            arrays.emplace_back(unparsedArray);
+            body.replace(arrStart + 1, arrEnd - arrStart - 1, indexString);
+            arrStart = body.find('[', arrStart + 1);
+        }
+    }
+
+
+    static std::string parseProperty(std::string unparsed, JSONObject* out, std::vector<std::string> subObjects, std::vector<std::string> arrays)
+    {
+        size_t i = 0;
+        while (std::isspace(unparsed[i])) i++;
+
+        std::string propertyName = parsePropertyName(unparsed, i);
+
+        // skip colon
+        i += propertyName.length() + 1;
+        while (std::isspace(unparsed[i])) i++;
+        if (unparsed[i] != ':') throw std::runtime_error("couldn't parse json: missing colon after property name");
+        else i++;
+        while (std::isspace(unparsed[i])) i++;
+
+        parsePropertyValue(unparsed, i, subObjects, arrays, out);
+
+        return propertyName;
+    }
+
+    static std::string parsePropertyName(std::string unparsed, size_t &i)
+    {
+        if (unparsed[i] != '"') throw std::runtime_error("couldn't parse json: unquoted property name");
+        std::string propertyName = unparsed.substr(++i);
+        size_t closeQuote = propertyName.find('"'); if (closeQuote == -1) throw std::runtime_error("couldn't parse json: unquoted property name");
+        propertyName = propertyName.substr(0, closeQuote);
+        return propertyName;
+    }
+
+    static void parsePropertyValue(std::string unparsed, size_t i, std::vector<std::string> subObjects, std::vector<std::string> arrays, JSONObject* out)
+    {
+        std::string propertyValue = unparsed.substr(i);
+
+        size_t openBracePos = propertyValue.find('{');
+        size_t openBracketPos = propertyValue.find('[');
+
+        bool isObject = openBracePos != -1 && (openBracketPos == -1 || openBracePos < openBracketPos);
+
+        // figure out the type of value
+        if (isObject)
+        {
+            int last = propertyValue.find('}');
+            std::string innerObject = propertyValue.substr(1, last - 1);
+            int objIndex = std::stoi(innerObject);
+
+            parseObject(subObjects[objIndex], out);
+        }
+        else if (openBracketPos != -1)
+        {
+            int last = propertyValue.find(']');
+            std::string innerObject = propertyValue.substr(1, last - 1);
+            int arrIndex = std::stoi(innerObject);
+
+            parseArray(arrays[arrIndex], out, subObjects);
+        }
+        else if (propertyValue.find('.') != -1)
+        {
+            out->jeffType = JSONObject::FLOAT;
+            out->jeffFloat = std::stof(propertyValue);
+        }
+        else if (propertyValue.find('"') != -1)
+        {
+            out->jeffType = JSONObject::STRING;
+            int closeQuote = propertyValue.find('"', 1);
+            if (closeQuote == -1) throw std::runtime_error("couldn't parse JSON: missing closing quote");
+            out->jeffString = propertyValue.substr(1, closeQuote - 1);
+        }
+        else if (propertyValue.find("true") != -1)
+        {
+            std::string whitespaceGone = "";
+            for (int k = 0; k < propertyValue.length(); k++)
+            {
+                if (!std::isspace(propertyValue[k]))
+                    whitespaceGone.push_back(propertyValue[k]);
+            }
+            if (whitespaceGone.compare("true") == 0)
+            {
+                out->jeffType = JSONObject::BOOL;
+                out->jeffBool = true;
+            }
+        }
+        else if (propertyValue.find("false") != -1)
+        {
+            std::string whitespaceGone = "";
+            for (int k = 0; k < propertyValue.length(); k++)
+            {
+                if (!std::isspace(propertyValue[k]))
+                    whitespaceGone.push_back(propertyValue[k]);
+            }
+            if (whitespaceGone.compare("false") == 0)
+            {
+                out->jeffType = JSONObject::BOOL;
+                out->jeffBool = false;
+            }
+        }
+        else if (propertyValue.find("null") != -1)
+        {
+            std::string whitespaceGone = "";
+            for (int k = 0; k < propertyValue.length(); k++)
+            {
+                if (!std::isspace(propertyValue[k]))
+                    whitespaceGone.push_back(propertyValue[k]);
+            }
+            if (whitespaceGone.compare("null") == 0)
+            {
+                out->jeffType = JSONObject::NULLVALUE;
+            }
+        }
+        else
+        {
+            out->jeffType = JSONObject::INT;
+            out->jeffInt = std::stoi(propertyValue);
         }
     }
 

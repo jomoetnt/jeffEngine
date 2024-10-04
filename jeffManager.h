@@ -4,6 +4,7 @@
 #include "jeffInput.h"
 #include "jeffAudio.h"
 #include "jeffScene.h"
+#include <windowsx.h>
 #include <vector>
 #include <chrono>
 
@@ -18,6 +19,7 @@ namespace jeffNamespace
 	public:
 		void handleKeyEvent(char keycode, bool keydown = true);
 		void handleMouseEvent(float x, float y);
+		int handleInputEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 		int doFrame();
 		void doPhysicsTick(float delta);

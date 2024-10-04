@@ -48,6 +48,7 @@ namespace jeffNamespace
 
 		void loadFromObj(const char* filename);
 		void loadFromMtl(const char* filename);
+		void loadFromGlb(const char* filename);
 
 		void draw(std::array<jeffLightPoint*, 4> lights, jeffLightDirectional* dirLight, jeffCamera* camera);
 		void setVBuf(ID3D11Buffer* &buf);

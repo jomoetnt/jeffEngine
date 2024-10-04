@@ -41,6 +41,44 @@ void jeffManager::changeScene(std::string scnName)
 	}
 }
 
+int jeffManager::handleInputEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_DESTROY:
+        jGraphics::destroyInstance();
+        jeffAudio::destroyInstance();
+        jeffManager::destroyInstance();
+        PostQuitMessage(0);
+        break;
+    case WM_CLOSE:
+        quit = 1;
+        DestroyWindow(hWnd);
+        break;
+    case WM_KEYDOWN:
+        jeffManager::getInstance()->handleKeyEvent((char)wParam);
+        break;
+    case WM_MOUSEMOVE:
+        jeffManager::getInstance()->handleMouseEvent((float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam));
+        break;
+    case WM_LBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x01);
+        break;
+    case WM_LBUTTONUP:
+        jeffManager::getInstance()->handleKeyEvent(0x01, false);
+        break;
+    case WM_RBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x02);
+        break;
+    case WM_MBUTTONDOWN:
+        jeffManager::getInstance()->handleKeyEvent(0x04);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
 void jeffManager::handleKeyEvent(char keycode, bool keydown)
 {
 	JEFF_KEY eventKey = jeffInput::getInstance()->handleKeyEvent(keycode);

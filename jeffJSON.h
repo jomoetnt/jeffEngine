@@ -18,7 +18,7 @@ public:
     {
         enum objType
         {
-            INT, STRING, BOOL, FLOAT, OBJECT, NULLVALUE, ARRAY
+            INT, STRING, BOOL, FLOAT, NULLVALUE, OBJECT, ARRAY
         };
         objType jeffType = NULLVALUE;
         int jeffInt = 0;
@@ -28,6 +28,7 @@ public:
         std::vector<JSONObject> jeffArray;
 
         std::unordered_map<std::string, JSONObject> dictionary;
+        std::vector<std::string> keys;
     };
 
     static std::vector<std::string> split(std::string s, std::string delimiter)
@@ -70,8 +71,122 @@ public:
         return str;
     }
 
+    static void writeJSON(const char* filename, JSONObject in)
+    {
+        std::string unparsed = unparseObject(in, 1);
+
+        std::ofstream file(filename);
+        file.write(unparsed.c_str(), unparsed.length());
+        file.close();
+    }
+
+    static std::string unparseObject(JSONObject in, int numIndents)
+    {
+        std::string unparsed = "{\n";
+
+        for (int i = 0; i < in.keys.size(); i++)
+        {
+            for (int j = 0; j < numIndents; j++)
+                unparsed.push_back('\t');
+
+            unparsed.append("\"");
+            unparsed.append(in.keys[i]);
+            unparsed.append("\": ");
+
+            std::string val = unparseProperty(in.dictionary[in.keys[i]], numIndents);
+            if (i < in.keys.size() - 1)
+                val.push_back(',');
+            val.append("\n");
+
+            unparsed.append(val);
+        }
+
+        for (int j = 0; j < numIndents - 1; j++)
+            unparsed.push_back('\t');
+        unparsed.push_back('}');
+        return unparsed;
+    }
+
+    static std::string unparseArray(JSONObject in, int numIndents)
+    {
+        std::string unparsed;
+        unparsed.append("[");
+
+        for (int i = 0; i < in.jeffArray.size(); i++)
+        {
+            bool isObject = in.jeffArray[i].jeffType == JSONObject::OBJECT;
+
+            if (isObject)
+            {
+                unparsed.push_back('\n');
+                for (int j = 0; j < numIndents; j++)
+                    unparsed.push_back('\t');
+            }
+
+            std::string val = unparseProperty(in.jeffArray[i], numIndents);
+            if (i < in.jeffArray.size() - 1)
+            {
+                val.append(", ");
+            }
+            else if (isObject)
+            {
+                val.append("\n");
+                for (int j = 0; j < numIndents - 1; j++)
+                    val.push_back('\t');
+            }
+
+            unparsed.append(val);
+        }
+
+        unparsed.push_back(']');
+        return unparsed;
+    }
+
+    static std::string unparseProperty(JSONObject value, int numIndents)
+    {
+        std::string stringval;
+        switch (value.jeffType)
+        {
+        case JSONObject::INT:
+            stringval = std::to_string(value.jeffInt);
+            break;
+        case JSONObject::STRING:
+            stringval = value.jeffString;
+            stringval.insert(0, "\"");
+            stringval.push_back('\"');
+            break;
+        case JSONObject::BOOL:
+            stringval = value.jeffBool ? "true" : "false";
+            break;
+        case JSONObject::FLOAT:
+            stringval = std::to_string(value.jeffFloat);
+            for (int i = stringval.length() - 1; i >= 2; i--)
+            {
+                if (stringval[i] != '0')
+                {
+                    stringval = stringval.substr(0, i + 1);
+                    break;
+                }
+            }
+            break;
+        case JSONObject::NULLVALUE:
+            stringval = "null";
+            break;
+        case JSONObject::OBJECT:
+            stringval = unparseObject(value, numIndents + 1);
+            break;
+        case JSONObject::ARRAY:
+            stringval = unparseArray(value, numIndents + 1);
+            break;
+        }
+        return stringval;
+    }
+
     static void readJSON(const char* filename, JSONObject* out)
     {
+        out->keys.clear();
+        out->dictionary.clear();
+
         std::ifstream file(filename);
         std::stringstream buffer;
         buffer << file.rdbuf();
@@ -109,11 +224,12 @@ public:
 
         // handle properties
         std::vector<std::string> properties = split(body, ",");
-        for (auto& property : properties)
+        for (int i = 0; i < properties.size(); i++)
         {
             JSONObject parsedProperty;
-            std::string propertyName = parseProperty(property, &parsedProperty, subObjects, arrays);
+            std::string propertyName = parseProperty(properties[i], &parsedProperty, subObjects, arrays);
             out->dictionary[propertyName] = parsedProperty;
+            out->keys.emplace_back(propertyName);
         }
     }
 

@@ -42,5 +42,5 @@
 		"subProperty3": 12.8
 	},
 	"testProperty8": 14000,
-	"testArray": [1, "bababooey", 3.5, null, true, {"arrayobjproperty": 95}, ["subarrayelement1", "subarrayelement2"]]
+	"testArray2": [1, "bababooey", 3.5, null, true, {"arrayobjproperty": 95}, ["subarrayelement1", "subarrayelement2"]]
 }

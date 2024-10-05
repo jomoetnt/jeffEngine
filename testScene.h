@@ -32,10 +32,6 @@ namespace jeffNamespace
 				jPointLights[i] = new jeffLightPoint("jeffLight");
 				jActiveCam->addChild(jPointLights[i]);
 			}
-
-			jeffJSON::JSONObject testJSON;
-			jeffJSON::readJSON("testJSON.json", &testJSON);
-			std::string reString = testJSON.dictionary["testProperty7"].jeffString;
 		}
 
 		~testScene()

@@ -4,6 +4,7 @@ using namespace jeffNamespace;
 
 jeffModel::jeffModel(const char* modelName, const char* meshFilename) : jeffObject::jeffObject(modelName)
 {
+	dimension3 = true;
 	jDev = jeffDeviceState::getInstance()->jDev; jContext = jeffDeviceState::getInstance()->jContext;
 
 	loadFromObj(meshFilename);

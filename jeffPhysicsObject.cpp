@@ -6,6 +6,7 @@ jeffPhysicsObject::jeffPhysicsObject(const char* objName, DirectX::XMFLOAT3 coll
 {
 	boundingBox.start = colliderStart;
 	boundingBox.end = colliderEnd;
+	dimension3 = true;
 
 	debugShape = new jeffModel("boxCollider", "models/box.obj");
 	debugShape->wireframe = true;

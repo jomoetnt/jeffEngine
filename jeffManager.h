@@ -12,7 +12,7 @@ namespace jeffNamespace
 {
 	class jeffManager;
 
-	static float delta;
+	//static float delta;
 
 	class jeffManager
 	{

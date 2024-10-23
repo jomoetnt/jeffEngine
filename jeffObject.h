@@ -24,6 +24,7 @@ namespace jeffNamespace
 	{
 	public:
 		std::string nodeName;
+		bool dimension3 = true;
 
 		jeffObject* parent = nullptr;
 		std::vector<jeffObject*> children;

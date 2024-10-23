@@ -16,6 +16,7 @@ namespace jeffNamespace
 
 		jeffCamera(const char* camName) : jeffObject::jeffObject(camName)
 		{
+			dimension3 = true;
 			setProjMat();
 		}
 

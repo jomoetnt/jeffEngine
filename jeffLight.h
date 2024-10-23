@@ -10,7 +10,10 @@ namespace jeffNamespace
 		// RGB + intensity
 		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 
-		jeffLight(const char* lightName) : jeffObject::jeffObject(lightName) {}
+		jeffLight(const char* lightName) : jeffObject::jeffObject(lightName)
+		{
+			dimension3 = true;
+		}
 
 		static DirectX::XMFLOAT4 threeToFour(DirectX::XMFLOAT3 in)
 		{

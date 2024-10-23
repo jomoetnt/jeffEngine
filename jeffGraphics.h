@@ -16,6 +16,7 @@ namespace jeffNamespace
 
 		ID3D11Device* jDev = nullptr;
 		ID3D11DeviceContext* jContext = nullptr;
+		ID2D1RenderTarget* jRT;
 
 		void draw2D();
 
@@ -57,10 +58,6 @@ namespace jeffNamespace
 
 		// D2D and DirectWrite
 		ID2D1Factory* jD2DFactory;
-		ID2D1RenderTarget* jRT;
-		ID2D1SolidColorBrush* jBrush;
-		IDWriteFactory* jWriteFactory;
-		IDWriteTextFormat* jTextFormat;
 
 
 		jGraphics() = default;

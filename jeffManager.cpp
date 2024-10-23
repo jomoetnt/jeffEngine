@@ -10,11 +10,12 @@ void jeffManager::makeInstance()
 int jeffManager::doFrame()
 {
 	jGraphics::getInstance()->beginFrame();
-	if (jActiveScene != nullptr)
-		jActiveScene->draw();
 
-	// make 2d nodes to replace
-	jGraphics::getInstance()->draw2D();
+    if (jActiveScene != nullptr)
+    {
+        jActiveScene->draw();
+        jActiveScene->draw2D();
+    }
 
 	jGraphics::getInstance()->endFrame();
 	return quit;

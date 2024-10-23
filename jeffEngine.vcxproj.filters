@@ -96,6 +96,15 @@
     <ClInclude Include="jeffMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jeffGUI.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="jeff2D.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="jeffText.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

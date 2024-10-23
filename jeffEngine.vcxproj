@@ -149,9 +149,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="jeff2D.h" />
     <ClInclude Include="jeffAudio.h" />
     <ClInclude Include="jeffCamera.h" />
     <ClInclude Include="jeffDeviceState.h" />
+    <ClInclude Include="jeffGUI.h" />
     <ClInclude Include="jeffJSON.h" />
     <ClInclude Include="jeffInput.h" />
     <ClInclude Include="jeffLight.h" />
@@ -167,6 +169,7 @@
     <ClInclude Include="jeffModel.h" />
     <ClInclude Include="jeffPhysicsObject.h" />
     <ClInclude Include="jeffScene.h" />
+    <ClInclude Include="jeffText.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="testGame.h" />

@@ -1,4 +1,5 @@
 #include "jeffObject.h"
+#include <stdexcept>
 
 using namespace jeffNamespace;
 
@@ -42,6 +43,9 @@ void jeffObject::tick(float delta)
 
 void jeffObject::addChild(jeffObject* child)
 {
+	if (child->dimension3 != dimension3)
+		throw std::runtime_error("Error adding child: child must have the same dimension as its parent.");
+
 	child->parent = this;
 	child->initObject();
 	children.emplace_back(child);

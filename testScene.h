@@ -27,15 +27,11 @@ namespace jeffNamespace
 			addModel(new jeffModel("cubeModel", "models/texturedcube.obj"), cube);
 			addModel(jModel2);
 
-			jeffText* fpsCounter = new jeffText("fps", jGraphics::getInstance()->jRT);
+			jeffFPS* fpsCounter = new jeffFPS("fps", jGraphics::getInstance()->jRT);
 			fpsCounter->transformPosition.x = 0.0f; fpsCounter->transformPosition.y = 0.0f;
 			fpsCounter->transformScale.x = 150.0f; fpsCounter->transformScale.y = 100.0f;
-			jeffText* fpsCounter2 = new jeffText("fps2", jGraphics::getInstance()->jRT);
-			fpsCounter2->transformPosition.x = 200.0f; fpsCounter2->transformPosition.y = 0.0f;
-			fpsCounter2->transformScale.x = 150.0f; fpsCounter2->transformScale.y = 100.0f;
 			jeffGUI* gooey = new jeffGUI("HUD", jGraphics::getInstance()->jRT);
 			gooey->guiElements.emplace_back(fpsCounter);
-			gooey->guiElements.emplace_back(fpsCounter2);
 			jGUIs.emplace_back(gooey);
 
 			for (int i = 0; i < 4; i++)

@@ -105,6 +105,9 @@
     <ClInclude Include="jeffText.h">
       <Filter>Header Files\jeffObjects</Filter>
     </ClInclude>
+    <ClInclude Include="jeffFPS.h">
+      <Filter>Header Files\jeffObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jeffEngine.cpp">

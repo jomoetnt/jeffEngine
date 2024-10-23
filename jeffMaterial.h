@@ -28,7 +28,7 @@ namespace jeffNamespace
         std::vector <ID3D11SamplerState*> jSams;
 
         // k_s, k_d, k_a, alpha (shininess)
-        DirectX::XMFLOAT4 properties = DirectX::XMFLOAT4(15.0f, 1.0f, 1.0f, 3.0f);
+        DirectX::XMFLOAT4 properties = DirectX::XMFLOAT4(2.0f, 1.0f, 1.0f, 1.0f);
 
         std::wstring name;
 

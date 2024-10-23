@@ -153,6 +153,7 @@
     <ClInclude Include="jeffAudio.h" />
     <ClInclude Include="jeffCamera.h" />
     <ClInclude Include="jeffDeviceState.h" />
+    <ClInclude Include="jeffFPS.h" />
     <ClInclude Include="jeffGUI.h" />
     <ClInclude Include="jeffJSON.h" />
     <ClInclude Include="jeffInput.h" />

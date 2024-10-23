@@ -5,7 +5,7 @@
 #include "jeffAudio.h"
 #include "jeffGraphics.h"
 #include "jeffGUI.h"
-#include "jeffText.h"
+#include "jeffFPS.h"
 
 namespace jeffNamespace
 {

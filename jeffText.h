@@ -12,7 +12,7 @@ namespace jeffNamespace
 		IDWriteFactory* jWriteFactory;
 		IDWriteTextFormat* jTextFormat;
 
-		std::string* text;
+		std::wstring* text;
 
 		jeffText(const char* textName, ID2D1RenderTarget* pjRT) : jeff2D::jeff2D(textName, pjRT)
 		{
@@ -37,7 +37,7 @@ namespace jeffNamespace
 			if (FAILED(hr)) throw std::runtime_error("error setting paragraph alignment");
 		}
 
-		jeffText(const char* textName, ID2D1RenderTarget* pjRT, std::string* ptext) : jeff2D::jeff2D(textName, jRT)
+		jeffText(const char* textName, ID2D1RenderTarget* pjRT, std::wstring* ptext) : jeff2D::jeff2D(textName, jRT)
 		{
 			text = ptext;
 		}
@@ -45,8 +45,7 @@ namespace jeffNamespace
 		void draw(float delta) override
 		{
 			D2D1_RECT_F layoutRect = D2D1::RectF(transformPosition.x, transformPosition.y, transformPosition.x + transformScale.x, transformPosition.y + transformScale.y);
-			std::wstring frameHz = std::to_wstring((int)(1.0f / delta));
-			jRT->DrawText(frameHz.c_str(), (UINT32)frameHz.size(), jTextFormat, layoutRect, jBrush);
+			jRT->DrawText(text->c_str(), (UINT32)text->size(), jTextFormat, layoutRect, jBrush);
 		}
 
 	};

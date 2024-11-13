@@ -7,7 +7,7 @@ jeffModel::jeffModel(const char* modelName, const char* meshFilename) : jeffObje
 	dimension3 = true;
 	jDev = jeffDeviceState::getInstance()->jDev; jContext = jeffDeviceState::getInstance()->jContext;
 
-	loadFromObj(meshFilename);
+	loadModel(meshFilename);
 
 	createRast();
 	createVBuf();
@@ -20,6 +20,16 @@ jeffModel::~jeffModel()
 {
 	jVConstBuf->Release();
 	jPConstBuf->Release();
+}
+
+void jeffModel::loadModel(const char* filename)
+{
+	std::string sfilename = filename;
+	std::string extension = jeffJSON::split(sfilename, ".")[1];
+	if (extension == "obj")
+		loadFromObj(filename);
+	else if (extension == "glb")
+		loadFromGlb(filename);
 }
 
 // Remove duplicate vertices in future
@@ -156,17 +166,44 @@ void jeffModel::loadFromMtl(const char* filename)
 void jeffModel::loadFromGlb(const char* filename)
 {
 	std::string meshPath = filename;
-	std::ifstream file(filename);
+	std::ifstream file(filename, std::ifstream::binary);
 
-	jeffMesh::vertVecStruct vertStruct;
+	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(file), {});
 
-	std::string line;
-	if (file.is_open())
+	struct
 	{
-		while (std::getline(file, line))
-		{
+		unsigned int magic;
+		unsigned int verison;
+		unsigned int size;
+	} header;
+	memcpy(&header, buffer.data(), sizeof(header));
 
+	int index = 12;
+	while (index < buffer.size())
+	{
+		struct
+		{
+			unsigned int chunkSize;
+			unsigned int chunkType;
+		} chunkInfo;
+		memcpy(&chunkInfo, buffer.data() + index, sizeof(chunkInfo));
+		index += sizeof(chunkInfo);
+
+		if (chunkInfo.chunkType == 1313821514)
+		{
+			char* chunkBuf = new char[chunkInfo.chunkSize];
+			memcpy(chunkBuf, buffer.data() + index, chunkInfo.chunkSize);
+			index += chunkInfo.chunkSize;
+			chunkBuf[chunkInfo.chunkSize - 1] = 0;
+			
+			std::string rawchunk(chunkBuf);
+
+			jeffJSON::JSONObject JSONchunk;
+			jeffJSON::parseObject(rawchunk, &JSONchunk);
+
+			delete[] chunkBuf;
 		}
+
 	}
 }
 

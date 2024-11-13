@@ -46,6 +46,7 @@ namespace jeffNamespace
 		void createIBuf();
 		void createRast();
 
+		void loadModel(const char* filename);
 		void loadFromObj(const char* filename);
 		void loadFromMtl(const char* filename);
 		void loadFromGlb(const char* filename);

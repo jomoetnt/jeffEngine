@@ -20,6 +20,7 @@ namespace jeffNamespace
 			setProjMat();
 		}
 
+		// temporary test
 		void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) override
 		{
 			switch (key)

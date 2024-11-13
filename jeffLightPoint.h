@@ -23,7 +23,7 @@ namespace jeffNamespace
 			mutableParams[0] = &lightParams.x; mutableParams[1] = &lightParams.y; mutableParams[2] = &lightParams.z;
 			mutableParams[3] = &lightColour.w;
 		}
-
+		//temporary test
 		void handleInputEvent(JEFF_KEY key, float* coords, bool keydown) override
 		{
 			switch (key)

@@ -39,6 +39,8 @@ namespace jeffNamespace
 				jPointLights[i] = new jeffLightPoint("jeffLight");
 				jActiveCam->addChild(jPointLights[i]);
 			}
+
+			jeffModel* jModel3 = new jeffModel("cloudmodel", "models/cloudremake.glb");
 		}
 
 		~testScene()

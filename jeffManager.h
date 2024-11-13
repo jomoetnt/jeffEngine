@@ -10,10 +10,6 @@
 
 namespace jeffNamespace
 {
-	class jeffManager;
-
-	//static float delta;
-
 	class jeffManager
 	{
 	public:

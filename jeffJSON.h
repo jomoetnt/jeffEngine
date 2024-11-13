@@ -401,17 +401,17 @@ public:
 
             parseArray(arrays[arrIndex], out, subObjects);
         }
-        else if (propertyValue.find('.') != -1)
-        {
-            out->jeffType = JSONObject::FLOAT;
-            out->jeffFloat = std::stof(propertyValue);
-        }
         else if (propertyValue.find('"') != -1)
         {
             out->jeffType = JSONObject::STRING;
             int closeQuote = propertyValue.find('"', 1);
             if (closeQuote == -1) throw std::runtime_error("couldn't parse JSON: missing closing quote");
             out->jeffString = propertyValue.substr(1, closeQuote - 1);
+        }
+        else if (propertyValue.find('.') != -1)
+        {
+            out->jeffType = JSONObject::FLOAT;
+            out->jeffFloat = std::stof(propertyValue);
         }
         else if (propertyValue.find("true") != -1)
         {
